@@ -1,0 +1,10 @@
+pydantic>=2
+python-dotenv
+google-genai
+sentence-transformers
+rank_bm25
+numpy
+typer
+streamlit
+pytest
+ruff
