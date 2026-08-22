@@ -41,7 +41,7 @@ _logger = logging.getLogger(__name__)
 _client: genai.Client | None = None
 _resolved_model: str | None = None  # None = probe not yet run
 
-FALLBACK_MODEL = "gemini-2.5-flash"
+FALLBACK_MODEL = "gemini-3.6-flash"
 
 # ---------------------------------------------------------------------------
 # lookup_order function schema for Gemini function calling
