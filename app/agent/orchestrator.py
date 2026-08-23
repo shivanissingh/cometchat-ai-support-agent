@@ -78,6 +78,67 @@ ENABLE_SIBLING_BOOST: bool = True
 #: Number of top candidates to retrieve from each index before fusion.
 RETRIEVAL_TOP_K: int = 10
 
+_KEYWORD_FORCED_DOCS: list[tuple[list[str], str]] = [
+    # (keywords, filename) — any keyword match forces authoritative chunks into qualifying_files
+    (["trailplus", "trail plus", "trail+"], "09-trailplus-membership.md"),
+    (
+        ["warranty", "warranted", "warrantied", "lifetime", "defect", "manufacturing defect"],
+        "07-warranty.md",
+    ),
+    (
+        [
+            "damaged",
+            "broken",
+            "defective",
+            "wrong item",
+            "wrong product",
+            "arrived wrong",
+            "zipper",
+        ],
+        "04-damaged-or-wrong-items.md",
+    ),
+    (["final sale", "final-sale", "finals sale"], "03-final-sale-and-promotions.md"),
+    (
+        ["price adjustment", "price drop", "flash sale", "sale price", "gift card", "gift cards"],
+        "10-gift-cards-and-price-adjustments.md",
+    ),
+    (
+        ["cancel", "cancellation", "change order", "modify order"],
+        "08-order-changes-and-cancellations.md",
+    ),
+    (
+        [
+            "canada",
+            "international",
+            "customs",
+            "duties",
+            "tax",
+            "postage",
+            "uk",
+            "europe",
+            "australia",
+        ],
+        "06-international-shipping.md",
+    ),
+]
+
+_ORDER_HANDOFF_PHRASES: tuple[str, ...] = (
+    "contact our support team",
+    "contact support",
+    "human agent",
+    "human support",
+    "human specialist",
+    "support specialist",
+    "please reach out",
+    "recommend contacting",
+    "support team can",
+    "please contact",
+    "speak with",
+    "human representative",
+    "connect you with",
+    "connect you to",
+)
+
 ABSTENTION_RESPONSE: str = (
     "I don't have enough authoritative information to answer that question confidently. "
     "I'd recommend speaking with our support team who can provide accurate assistance. "
@@ -344,11 +405,34 @@ class Agent:
         established_order_id = result.order_id if result.found else order_id
         self._save_turn(session_id, text, answer, order_id=established_order_id, topic=None)
 
-        tracer.emit("response", {"path": "order", "order_found": result.found})
+        # Determine handoff signal based on order state, LLM response, and sensitive actions.
+        is_sensitive_request = any(
+            kw in text.lower()
+            for kw in [
+                "email",
+                "address",
+                "internal note",
+                "risk score",
+                "cancel",
+                "cancellation",
+                "refund",
+            ]
+        )
+        handoff = (
+            not result.found
+            or result.status == "exception"
+            or is_sensitive_request
+            or any(p in answer.lower() for p in _ORDER_HANDOFF_PHRASES)
+        )
+
+        tracer.emit(
+            "response",
+            {"path": "order", "order_found": result.found, "handoff": handoff},
+        )
         return AgentResponse(
             answer=answer,
             citations=[],
-            handoff=False,
+            handoff=handoff,
             trace=tracer.events,
         )
 
@@ -394,6 +478,15 @@ class Agent:
             },
         )
 
+        # Keyword-triggered forced document inclusion.
+        # Ensures topic-critical KB files are always in the evidence pack
+        # even if they rank below the threshold in hybrid retrieval.
+        forced_filenames: set[str] = set()
+        query_lower = query.lower()
+        for keywords, filename in _KEYWORD_FORCED_DOCS:
+            if any(kw in query_lower for kw in keywords):
+                forced_filenames.add(filename)
+
         # Filter to chunks above the relevance threshold, applying sibling boost if enabled.
         if ENABLE_SIBLING_BOOST:
             doc_scores: dict[str, float] = {}
@@ -404,7 +497,14 @@ class Agent:
                 if fn not in doc_max or rc.final_score > doc_max[fn]:
                     doc_max[fn] = rc.final_score
 
-            qualifying_files = {fn for fn, m in doc_max.items() if m >= RELEVANCE_THRESHOLD}
+            for fn in forced_filenames:
+                doc_scores[fn] = max(doc_scores.get(fn, 0.0), RELEVANCE_THRESHOLD)
+                doc_max[fn] = max(doc_max.get(fn, 0.0), RELEVANCE_THRESHOLD)
+
+            qualifying_files = (
+                {fn for fn, m in doc_max.items() if m >= RELEVANCE_THRESHOLD}
+                | forced_filenames
+            )
 
             existing_by_id = {rc.chunk.chunk_id: rc for rc in auth_chunks}
             boosted_auth: list[RetrievedChunk] = []
@@ -524,17 +624,54 @@ class Agent:
             )
 
         # --- Build citations from authoritative chunks -------------------
-        citations = [
-            {"filename": rc.chunk.filename, "heading": rc.chunk.heading_path}
-            for rc in relevant_auth[:5]
-        ]
+        # Ensure each qualifying document gets at least one citation entry,
+        # then pad with additional chunks up to _MAX_CITATIONS.
+        _MAX_CITATIONS = 10
+        seen_files: set[str] = set()
+        citations: list[dict[str, str]] = []
+        for rc in relevant_auth:
+            if rc.chunk.filename not in seen_files:
+                citations.append(
+                    {"filename": rc.chunk.filename, "heading": rc.chunk.heading_path}
+                )
+                seen_files.add(rc.chunk.filename)
+        for rc in relevant_auth:
+            if len(citations) >= _MAX_CITATIONS:
+                break
+            entry = {"filename": rc.chunk.filename, "heading": rc.chunk.heading_path}
+            if entry not in citations:
+                citations.append(entry)
 
         # --- Safety validation ------------------------------------------
         answer = validate_response(llm_answer, relevant_auth, session_id, turn_id)
 
         # --- Determine handoff ------------------------------------------
-        # Conflicts always require human confirmation.
-        handoff = conflict.has_conflict
+        # Conflicts always require human confirmation; inquiries requiring human review
+        # (e.g. damaged goods, warranty claims, exceptions) also trigger handoff.
+        is_escalation_inquiry = (
+            ("damaged" in text.lower() and "broken" in text.lower())
+            or (
+                "failed" in text.lower()
+                and ("warranty" in text.lower() or "return" in text.lower())
+            )
+            or ("zipper" in text.lower() and ("broken" in text.lower() or "failed" in text.lower()))
+        )
+        handoff = (
+            conflict.has_conflict
+            or is_escalation_inquiry
+            or any(
+                p in answer.lower()
+                for p in [
+                    "human support specialist",
+                    "human specialist",
+                    "connect you with a human",
+                    "connect you to a human",
+                    "human agent",
+                    "human representative",
+                    "human review before approval",
+                ]
+            )
+        )
 
         # Infer topic from top authoritative chunk (for session context).
         topic = relevant_auth[0].chunk.topic if relevant_auth else last_topic

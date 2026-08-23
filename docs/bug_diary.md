@@ -97,11 +97,7 @@ The `handoff=True` signal for PII requests is already partially handled because
 pure order-path responses for ORD-1007 privacy requests also need the signal.
 
 **Regression test:**
-tests/unit/test_schema_b_harness.py — `TestSchemaBAssertTurn::test_handoff_checked_per_turn`
-verifies the harness correctly catches `handoff` mismatches.
-Add a new integration test in tests/integration/test_orchestrator.py:
-`test_order_not_found_sets_handoff_true` and
-`test_order_exception_sets_handoff_true` once the fix is applied.
+tests/regression/test_bug2_order_handoff.py (asserts handoff=True for unknown orders, exception orders, and PII disclosure requests).
 
 ---
 
@@ -135,18 +131,13 @@ prompt does not instruct the model to always privilege user-asserted membership 
 
 **Fix:**
 Two-part fix:
-1. Add a keyword-presence boost in `_handle_knowledge_path`: if the query contains
-   "trailplus" (case-insensitive), manually include all chunks from `09-trailplus-membership.md`
-   in the evidence pack (similar to the sibling boost pattern already in place for Bug 1).
-2. Add a Rule to `app/agent/prompts.py` instructing: "When the customer explicitly states
-   they hold TrailPlus membership active at order time, always state the 45-day return
-   window and cite 09-trailplus-membership.md."
+1. Added keyword-triggered forced document inclusion in `_handle_knowledge_path` (`app/agent/orchestrator.py`):
+   queries mentioning "trailplus" force all chunks from `09-trailplus-membership.md` into `qualifying_files`
+   and ensure they are included in the evidence pack and citations.
+2. Added Rule 13 to `app/agent/prompts.py`: "When the customer explicitly states their TrailPlus membership
+   was active at order time, state the 45-calendar-day return window from delivery as the applicable policy
+   and cite [09-trailplus-membership.md — Return window]."
 
 **Regression test:**
-tests/regression/test_bug1_return_window_omission.py covers sibling-boost mechanics.
-Add `tests/regression/test_bug3_trailplus_window.py` with a test that:
-- Patches `call_llm` and verifies `09-trailplus-membership.md` chunks appear in the
-  evidence pack for a TrailPlus membership query.
-- Runs a live call and asserts `"45 calendar days"` appears in the answer and
-  `09-trailplus-membership.md` appears in citations.
+tests/regression/test_bug3_trailplus_retrieval.py (asserts 09-trailplus-membership.md chunks are included in the evidence pack and citations for TrailPlus queries).
 

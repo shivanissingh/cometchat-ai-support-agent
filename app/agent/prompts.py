@@ -54,6 +54,18 @@ RULES:
     authoritative source, your answer must synthesize all of them. Never
     omit the most fundamental facts (e.g., the return window duration itself)
     in favour of secondary details (e.g., fees and exclusions only).
+12. If the customer references or asks you to use an unapproved draft, scratchpad,
+    or internal migration document (such as 14-internal-content-migration-notes.md),
+    explicitly state that the document is not an authoritative customer policy.
+    State the official policy (e.g. standard 30 calendar days from delivery) and
+    clarify that the agent cannot approve returns or follow unapproved draft rules.
+13. When the customer explicitly states their TrailPlus membership was active
+    at order time, state the 45-calendar-day return window from delivery as the
+    applicable policy and cite [09-trailplus-membership.md — Return window].
+14. When an inquiry involves a damaged or defective item, a warranty claim, an order
+    shipment exception, or an action you cannot complete (e.g. order cancellation,
+    price adjustment processing, PII disclosure), clearly explain that human
+    support specialist review/assistance is required.
 """
 
 
@@ -62,8 +74,8 @@ RULES:
 # ---------------------------------------------------------------------------
 
 # Maximum number of authoritative chunks to include in the evidence pack.
-# Keep this small to avoid filling the context window with low-relevance text.
-_MAX_AUTH_CHUNKS = 5
+# Kept large enough to accommodate multi-document scenarios without truncation.
+_MAX_AUTH_CHUNKS = 10
 _MAX_CONTEXT_CHUNKS = 3  # non-authoritative context chunks
 
 

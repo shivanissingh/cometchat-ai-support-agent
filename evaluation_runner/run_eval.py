@@ -733,6 +733,13 @@ def main() -> None:
             time.sleep(BATCH_PAUSE_SECONDS)
 
         model = eval_models[batch_idx]
+        from app import config as app_config
+        from app.agent import llm_client
+
+        app_config.GEMINI_MODEL = model
+        llm_client._resolved_model = model
+        os.environ["GEMINI_MODEL"] = model
+
         _logger.info(
             "=== Batch %d/%d: cases %d-%d using model '%s' ===",
             batch_idx + 1, len(batch_boundaries), start, end - 1, model,
