@@ -4,7 +4,6 @@
 [![Evaluation Suite](https://img.shields.io/badge/eval%20suite-25%2F25%20passing%20(100%25)-brightgreen.svg)](evaluation/)
 [![Test Suite](https://img.shields.io/badge/tests-199%20passed-success.svg)](tests/)
 [![Architecture](https://img.shields.io/badge/architecture-deterministic%20reliability%20layer-orange.svg)](docs/)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
 
 The Aster & Row AI Support Agent is a deterministic reliability layer built around a Large Language Model, engineered to deliver trustworthy customer assistance rather than functioning as an unconstrained chatbot. It retrieves policies from a curated knowledge base using dense-sparse hybrid search and Reciprocal Rank Fusion, executes precise order status lookups through an isolated whitelist tool, and applies deterministic document precedence and multi-source conflict detection before any LLM generation occurs. All retrieved text and tool results are treated as untrusted reference data, ensuring the system fails safely through structured abstention and human escalation rather than hallucinating answers. A smaller, well-tested system built for the assignment's stated goal — reliability over demo breadth.
 
@@ -32,11 +31,26 @@ The Aster & Row AI Support Agent is a deterministic reliability layer built arou
 
 ## Demo
 
-> **Demo video coming** — see recording instructions at the bottom of this README.
->
-> ![demo](docs/demo.gif)
->
-> The demo covers: a knowledge-base question with citations, an order lookup, a multi-turn conversation, a case where the agent correctly refuses to guess, and the evaluation suite running.
+[Watch the Demo Video (Google Drive)](https://drive.google.com/file/d/14YF0ZDi04hSGCfoQDS8TyIecgjB21rdX/view?usp=drive_link)
+
+The video walkthrough demonstrates all core agent capabilities and evaluation workflows:
+
+1. **Knowledge-Base Question with Citations**:
+   - *Query*: `"Can you actually cancel an order or process a refund for me, or can you only answer questions?"`
+   - *Demonstrated*: Synthesizes policy boundaries and system capabilities with source citations, clearly explaining that transactional changes and financial actions require human support specialists.
+2. **Order Lookup & Privacy Protection**:
+   - *Query*: `"Where is ORD-1006?"`
+   - *Demonstrated*: Invokes the isolated whitelist order tool to report delivery status (Delivered, USPS) while strictly withholding sensitive customer PII.
+3. **Multi-Turn Conversation & Clean Topic Switch**:
+   - *Turn 1*: `"Where is ORD-1006?"`
+   - *Turn 2*: `"What's your warranty policy for bags?"`
+   - *Demonstrated*: Carries session history across turns and cleanly shifts from order status tracking to product warranty policies (2-year coverage for bags citing `07-warranty.md`) without sticky context confusion.
+4. **Safe Abstention & Human Escalation (`handoff=True`)**:
+   - *Query*: `"I received my Breeze Tumbler about 3 weeks ago and I just noticed the lid has a crack that looks like it came from manufacturing. What are my options?"`
+   - *Demonstrated*: Performs time-boundary reasoning across intersecting policies (7-day damaged item window vs. 1-year drinkware warranty) and triggers a human support escalation recommendation.
+5. **Evaluation Suite Execution**:
+   - *Command*: `python -m evaluation_runner.run_eval`
+   - *Demonstrated*: Runs the 25-case automated evaluation suite in the terminal, verifying deterministic assertions across all 10 categories with a 100% pass rate.
 
 ---
 
@@ -540,29 +554,3 @@ The prompt rule was rewritten in descriptive, non-echoing language that avoids e
 
 ---
 
-## Demo Recording Instructions
-
-To record the 2–4 minute demo GIF/video (`docs/demo.gif`):
-
-1. **Launch Streamlit Web UI**:
-   ```bash
-   streamlit run app/web.py
-   ```
-2. **Scenario 1: Knowledge Query with Citations**
-   - *Message*: `"How long do I have to return an item?"`
-   - *Verify*: Response states 30 calendar days from delivery and displays `[01-returns-policy-current.md — Return Window]`.
-3. **Scenario 2: Order Status Lookup & Privacy Guardrails**
-   - *Message*: `"Where is ORD-1007 and what is my email and address?"`
-   - *Verify*: Response reports status (Shipped, UPS, ETA August 22, 2026) while explicitly refusing to disclose email/address.
-3. **Scenario 3: Multi-Turn Conversation Narrowing**
-   - *Turn 1*: `"Do you ship internationally?"`
-   - *Turn 2*: `"What about Canada, and how long does it take?"`
-   - *Verify*: Context carries forward smoothly without topic restart, citing `06-international-shipping.md`.
-4. **Scenario 4: Safe Abstention & Source Conflict Handoff**
-   - *Message*: `"Can I put the Breeze Tumbler in the dishwasher?"`
-   - *Verify*: Agent identifies the contradiction between `11-product-care.md` and `12-breeze-tumbler-product-card.md`, presents both claims, and triggers an escalation banner (`Human Handoff`).
-5. **Scenario 5: Running the Evaluation Suite**
-   - *Command*: `python -m evaluation_runner.run_eval`
-   - *Verify*: Show the terminal running all 25 cases and displaying the 100% pass summary table.
-6. **Export & Save**:
-   - Save the recording as `docs/demo.gif` in the repository root.
