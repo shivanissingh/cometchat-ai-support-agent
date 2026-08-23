@@ -1,40 +1,50 @@
 """
-app/cli.py — Interactive CLI for the CometChat RAG Support Agent.
+app/cli.py — Enhanced Interactive CLI for the CometChat RAG Support Agent.
 
 Commands
 --------
-chat
+chat (default)
     Start an interactive support chat session. Reads user input line-by-line,
     calls Agent.handle_message, and prints the formatted answer. Citations and the
-    handoff recommendation are displayed after the answer.
+    handoff recommendation are displayed cleanly after the answer.
+
+    Special In-Chat Commands:
+    - `/help`   : Show available commands and sample queries.
+    - `/debug`  : Toggle debug trace display on/off for subsequent turns.
+    - `/clear`  : Reset conversation context and generate a fresh session ID.
+    - `exit`    : End the chat session.
 
     Options
     -------
     --debug
-        After printing the answer for each turn, also prints the full
-        structured trace (as syntax-highlighted JSON) so developers can inspect
-        routing decisions, retrieval scores, conflict detection results,
-        and safety-validation outcomes.
+        Start session with debug mode enabled (prints full structured trace
+        as syntax-highlighted JSON after each answer).
 
 Session isolation
 -----------------
-A UUID is generated once at process startup and used for every turn in the
-session. This mirrors the Streamlit session model: one session per CLI
-process lifetime.
+A UUID is generated at startup and used for all turns in the session.
 
 Security
 --------
-The trace data shown by --debug is the SAME scrubbed data stored in
-AgentResponse.trace — forbidden order fields and the GEMINI_API_KEY value
-have already been redacted by the observability layer before they reach the
-AgentResponse.
+Trace data shown by --debug is the SAME scrubbed data stored in
+AgentResponse.trace — forbidden order fields and GEMINI_API_KEY value
+are redacted by the observability layer before they reach the AgentResponse.
 """
 
 from __future__ import annotations
 
 import logging
 import os
+import sys
 import warnings
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Ensure project root is in sys.path (supports `python app/cli.py`)
+# ---------------------------------------------------------------------------
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 # ---------------------------------------------------------------------------
 # Suppress warnings, noisy logs & progress bars before importing heavy modules
@@ -55,6 +65,7 @@ from rich.console import Console  # noqa: E402
 from rich.markdown import Markdown  # noqa: E402
 from rich.panel import Panel  # noqa: E402
 from rich.syntax import Syntax  # noqa: E402
+from rich.table import Table  # noqa: E402
 
 # Silence root logger and attach NullHandler to avoid console log leakage
 root_logger = logging.getLogger()
@@ -76,10 +87,6 @@ try:
     tf_logging.set_verbosity_error()
 except Exception:
     pass
-root_logger.setLevel(logging.CRITICAL)
-for handler in list(root_logger.handlers):
-    root_logger.removeHandler(handler)
-root_logger.addHandler(logging.NullHandler())
 
 # Silence specific noisy third-party loggers and warnings logger
 for logger_name in (
@@ -111,6 +118,21 @@ app = typer.Typer(
 )
 
 
+def _print_help() -> None:
+    """Display in-chat command helper and sample questions."""
+    table = Table(title="💬 CLI Commands & Sample Questions", border_style="cyan", show_header=True)
+    table.add_column("Command / Query", style="bold green")
+    table.add_column("Description", style="dim")
+    table.add_row("/help", "Show this help table")
+    table.add_row("/debug", "Toggle structured trace on/off for subsequent answers")
+    table.add_row("/clear", "Reset session history and start with a new session ID")
+    table.add_row("exit / quit", "Exit the chat session")
+    table.add_row("Where is ORD-1007?", "Look up status and details for an order")
+    table.add_row("What is your return policy?", "Query knowledge base for return windows & fees")
+    table.add_row("Can I return final-sale?", "Query policy for damaged item exceptions")
+    console.print(table)
+
+
 # ---------------------------------------------------------------------------
 # chat command (default entry point)
 # ---------------------------------------------------------------------------
@@ -135,13 +157,16 @@ def chat(
     from app.agent.orchestrator import Agent
 
     session_id = str(uuid.uuid4())
+    debug_active = debug
 
-    mode_str = "[bold green]ENABLED[/bold green]" if debug else "[dim]DISABLED[/dim]"
+    mode_str = "[bold green]ENABLED[/bold green]" if debug_active else "[dim]DISABLED[/dim]"
     welcome_text = (
         f"[bold cyan]💬 CometChat AI Support Agent[/bold cyan]\n"
         f"[dim]Session ID:[/dim] [bright_black]{session_id}[/bright_black]\n"
         f"[dim]Debug Mode:[/dim] {mode_str}\n\n"
-        f"[italic]Type your question and press Enter. Type 'exit' or 'quit' to end.[/italic]"
+        f"[dim]Commands:[/dim] [green]/help[/green] • [green]/debug[/green] • "
+        f"[green]/clear[/green] • [green]exit[/green]\n"
+        f"[italic]Type your question and press Enter to chat.[/italic]"
     )
     console.print(Panel(welcome_text, border_style="cyan", padding=(1, 2)))
 
@@ -161,15 +186,35 @@ def chat(
         stripped = user_input.strip()
         if not stripped:
             continue
-        if stripped.lower() in {"exit", "quit"}:
+
+        lower_input = stripped.lower()
+        if lower_input in {"exit", "quit", "/exit", "/quit"}:
             console.print("[dim]Goodbye![/dim]")
             break
+
+        if lower_input == "/help":
+            _print_help()
+            console.print("")
+            continue
+
+        if lower_input == "/debug":
+            debug_active = not debug_active
+            status_txt = (
+                "[bold green]ENABLED[/bold green]" if debug_active else "[dim]DISABLED[/dim]"
+            )
+            console.print(f"[cyan]Debug trace display is now {status_txt}.[/cyan]\n")
+            continue
+
+        if lower_input == "/clear":
+            session_id = str(uuid.uuid4())
+            console.print(f"[dim yellow]Session reset. New Session ID: {session_id}[/dim yellow]\n")
+            continue
 
         try:
             with console.status("[bold blue]Thinking...[/bold blue]", spinner="dots"):
                 response = agent.handle_message(session_id=session_id, text=stripped)
         except Exception as err:
-            console.print(f"\n[bold red]Error:[/bold red] {err}\n")
+            console.print(f"\n[bold red]⚠️ Error processing request:[/bold red] {err}\n")
             continue
 
         # --- Answer -------------------------------------------------------
@@ -186,10 +231,17 @@ def chat(
 
         # --- Handoff recommendation --------------------------------------
         if response.handoff:
-            console.print("\n[bold yellow]🔺 Recommend contacting human support[/bold yellow]")
+            console.print(
+                Panel(
+                    "[bold yellow]🔺 Escalation Notice[/bold yellow]\n"
+                    "Human support assistance is recommended for this inquiry.",
+                    border_style="yellow",
+                    padding=(0, 1),
+                )
+            )
 
         # --- Debug trace -------------------------------------------------
-        if debug:
+        if debug_active:
             turn_num = response.trace[0].turn_id if response.trace else 0
             trace_data = [
                 {

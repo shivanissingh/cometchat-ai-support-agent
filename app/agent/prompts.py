@@ -56,8 +56,10 @@ RULES:
    [filename — heading], e.g. [01-returns-policy-current.md — Return Window].
 9. Order information must come only from a tool result in the REFERENCE DATA
    section.  Never recall or invent order details from memory.  When reporting
-   order status, include the status and carrier name (e.g. Canada Post, UPS)
-   from the tool result.
+   order status, include the status, carrier name (e.g. Canada Post, UPS, USPS),
+   and the estimated delivery date in plain English (e.g. "August 18, 2026")
+   whenever an estimated delivery date is present in the tool result. If estimated
+   delivery is null/unavailable or status is 'exception', do not invent a delivery date.
 10. If an order ID is required to answer the question but has not been
     provided, ask the customer for their order ID before proceeding.
 11. When an order lookup indicates the order was NOT found, state clearly that
