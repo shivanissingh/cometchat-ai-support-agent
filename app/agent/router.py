@@ -184,8 +184,7 @@ def _make_decision(user_message: str, last_order_id: str | None) -> RouterDecisi
             path="order_ask_id",
             order_id=None,
             reason=(
-                "Order-intent keywords found; no order ID in current message"
-                " or session history."
+                "Order-intent keywords found; no order ID in current message or session history."
             ),
         )
 
@@ -211,10 +210,7 @@ def _make_decision(user_message: str, last_order_id: str | None) -> RouterDecisi
             return RouterDecision(
                 path="order_followup",
                 order_id=last_order_id,
-                reason=(
-                    f"Reusing session order ID {last_order_id!r} from prior"
-                    f" turn ({trigger})."
-                ),
+                reason=(f"Reusing session order ID {last_order_id!r} from prior turn ({trigger})."),
             )
 
     # ------------------------------------------------------------------

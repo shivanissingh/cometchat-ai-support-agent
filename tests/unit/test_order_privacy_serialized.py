@@ -7,6 +7,7 @@ test called for by the evaluation harness spec: "forbidden field check
 has a test that searches the serialized SafeOrderResult JSON string for
 literal forbidden values".
 """
+
 from __future__ import annotations
 
 import json
@@ -17,13 +18,13 @@ from app.orders.lookup import lookup_order
 
 FORBIDDEN_LITERALS_BY_ORDER: dict[str, list[str]] = {
     "ORD-1007": [
-        "ava.morgan@example.test",        # email (PII)
-        "220 King Street",                 # shipping_address (PII)
-        "Ava Morgan",                      # customer name (PII)
-        "82",                              # risk_score value
-        "fraud review",                    # warehouse_note fragment
-        "Manual fraud review cleared",     # warehouse_note full
-        "review-cleared",                  # support_tag
+        "ava.morgan@example.test",  # email (PII)
+        "220 King Street",  # shipping_address (PII)
+        "Ava Morgan",  # customer name (PII)
+        "82",  # risk_score value
+        "fraud review",  # warehouse_note fragment
+        "Manual fraud review cleared",  # warehouse_note full
+        "review-cleared",  # support_tag
     ],
     "ORD-1005": [
         "sofia.patel@example.test",
@@ -49,9 +50,10 @@ FORBIDDEN_LITERALS_BY_ORDER: dict[str, list[str]] = {
 class TestForbiddenLiteralsInSerializedJSON:
     """Searches the full serialized JSON string for forbidden literal values."""
 
-    @pytest.mark.parametrize("order_id,forbidden_literals", [
-        (oid, lits) for oid, lits in FORBIDDEN_LITERALS_BY_ORDER.items()
-    ])
+    @pytest.mark.parametrize(
+        "order_id,forbidden_literals",
+        [(oid, lits) for oid, lits in FORBIDDEN_LITERALS_BY_ORDER.items()],
+    )
     def test_no_forbidden_literals_in_json(
         self, order_id: str, forbidden_literals: list[str]
     ) -> None:
@@ -117,6 +119,4 @@ class TestForbiddenLiteralsInSerializedJSON:
             "risk_score value 82 leaked into serialized output"
         )
         # The key must also be absent.
-        assert "risk_score" not in parsed, (
-            "risk_score key leaked into serialized output"
-        )
+        assert "risk_score" not in parsed, "risk_score key leaked into serialized output"

@@ -3,6 +3,7 @@ tests/unit/test_session_cross_isolation.py
 
 Tests that two session_ids through the same Agent process never share state.
 """
+
 from __future__ import annotations
 
 from app.session.store import SessionStore, Turn
@@ -18,12 +19,12 @@ class TestSessionStoreCrossIsolation:
     def test_two_sessions_independent_turns(self) -> None:
         """Two session IDs must never share turns."""
         store = SessionStore()
-        store.add_turn("sess-A", Turn(
-            user_msg="Hello", agent_response="Hi A", order_id=None, topic=None
-        ))
-        store.add_turn("sess-B", Turn(
-            user_msg="World", agent_response="Hi B", order_id=None, topic=None
-        ))
+        store.add_turn(
+            "sess-A", Turn(user_msg="Hello", agent_response="Hi A", order_id=None, topic=None)
+        )
+        store.add_turn(
+            "sess-B", Turn(user_msg="World", agent_response="Hi B", order_id=None, topic=None)
+        )
 
         turns_a = store.get_turns("sess-A")
         turns_b = store.get_turns("sess-B")
@@ -41,9 +42,7 @@ class TestSessionStoreCrossIsolation:
 
         assert store.get_last_order_id("sess-A") == "ORD-1005"
         assert store.get_last_order_id("sess-B") == "ORD-1007"
-        assert (
-            store.get_last_order_id("sess-A") != store.get_last_order_id("sess-B")
-        )
+        assert store.get_last_order_id("sess-A") != store.get_last_order_id("sess-B")
 
     def test_unknown_session_returns_empty(self) -> None:
         """A session that was never used returns an empty list and None IDs."""

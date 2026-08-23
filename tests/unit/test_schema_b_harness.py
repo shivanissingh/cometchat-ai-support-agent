@@ -8,6 +8,7 @@ This covers the harness spec requirement: "per-turn assertion path (Schema B)
 has a unit test confirming the harness correctly asserts Turn 1 and Turn 2
 independently."
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -74,30 +75,21 @@ class TestMustInclude:
 
     def test_all_phrases_present_passes(self) -> None:
         assert (
-            _check_must_include(
-                "delivered via UPS on August 22", ["delivered", "August 22"]
-            )
+            _check_must_include("delivered via UPS on August 22", ["delivered", "August 22"])
             is None
         )
 
 
 class TestMustNotInclude:
     def test_phrase_absent_passes(self) -> None:
-        assert (
-            _check_must_not_include("order is processing", ["your return is approved"])
-            is None
-        )
+        assert _check_must_not_include("order is processing", ["your return is approved"]) is None
 
     def test_phrase_present_fails(self) -> None:
-        reason = _check_must_not_include(
-            "your return is approved", ["your return is approved"]
-        )
+        reason = _check_must_not_include("your return is approved", ["your return is approved"])
         assert reason is not None
 
     def test_case_insensitive(self) -> None:
-        reason = _check_must_not_include(
-            "Your Return Is Approved", ["your return is approved"]
-        )
+        reason = _check_must_not_include("Your Return Is Approved", ["your return is approved"])
         assert reason is not None
 
 
@@ -119,10 +111,7 @@ class TestCheckTool:
         assert reason is not None
 
     def test_not_called_without_id_asks_for_order_id(self) -> None:
-        assert (
-            _check_tool([], "not_called_without_id", "Please provide your order ID")
-            is None
-        )
+        assert _check_tool([], "not_called_without_id", "Please provide your order ID") is None
 
     def test_not_called_without_id_no_ask_fails(self) -> None:
         reason = _check_tool([], "not_called_without_id", "I cannot help with that")
@@ -132,9 +121,7 @@ class TestCheckTool:
 class TestRequiredSources:
     def test_source_present_passes(self) -> None:
         citations = [{"filename": "01-returns-policy-current.md", "heading": ""}]
-        r, hits, misses = _check_required_sources(
-            citations, ["01-returns-policy-current.md"]
-        )
+        r, hits, misses = _check_required_sources(citations, ["01-returns-policy-current.md"])
         assert r is None
         assert hits == ["01-returns-policy-current.md"]
         assert misses == []
@@ -162,14 +149,24 @@ class TestSchemaBAssertTurn:
         turn_2_resp = _StubResponse(answer="You can return items anytime.")
 
         t1_failures = _assert_turn(
-            turn_1_expect, turn_1_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_1_expect,
+            turn_1_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         assert t1_failures == [], f"Turn 1 should pass, got: {t1_failures}"
 
         t2_failures = _assert_turn(
-            turn_2_expect, turn_2_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_2_expect,
+            turn_2_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         assert t2_failures, "Turn 2 should fail"
         assert "30 calendar days" in t2_failures[0]
@@ -183,8 +180,13 @@ class TestSchemaBAssertTurn:
         turn_1_resp = _StubResponse(answer="Your risk score is low.")
 
         failures = _assert_turn(
-            turn_1_expect, turn_1_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_1_expect,
+            turn_1_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         assert any("risk score" in f for f in failures), (
             f"Expected risk score failure, got: {failures}"
@@ -196,17 +198,25 @@ class TestSchemaBAssertTurn:
         turn_2_expect = {"must_not_include": ["your return is approved"]}
 
         turn_1_resp = _StubResponse(answer="Your order was delivered on August 10.")
-        turn_2_resp = _StubResponse(
-            answer="Returns are subject to our standard 30-day policy."
-        )
+        turn_2_resp = _StubResponse(answer="Returns are subject to our standard 30-day policy.")
 
         t1_failures = _assert_turn(
-            turn_1_expect, turn_1_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_1_expect,
+            turn_1_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         t2_failures = _assert_turn(
-            turn_2_expect, turn_2_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_2_expect,
+            turn_2_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         assert t1_failures == []
         assert t2_failures == []
@@ -232,12 +242,22 @@ class TestSchemaBAssertTurn:
         )
 
         t1_failures = _assert_turn(
-            turn_1_expect, turn_1_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_1_expect,
+            turn_1_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         t2_failures = _assert_turn(
-            turn_2_expect, turn_2_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_2_expect,
+            turn_2_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
 
         assert t1_failures == [], f"Turn 1 should pass, got: {t1_failures}"
@@ -249,8 +269,13 @@ class TestSchemaBAssertTurn:
         turn_2_resp = _StubResponse(answer="We need to escalate this.", handoff=True)
 
         failures = _assert_turn(
-            turn_2_expect, turn_2_resp, [], "model", "",
-            _empty_stats(), _empty_stats(),
+            turn_2_expect,
+            turn_2_resp,
+            [],
+            "model",
+            "",
+            _empty_stats(),
+            _empty_stats(),
         )
         assert failures, "Expected handoff failure"
         assert "handoff" in failures[0]
@@ -272,17 +297,23 @@ class TestSchemaBAssertTurn:
         )
 
         _assert_turn(
-            turn_1_expect, turn_1_resp, [], "model", "",
-            citation_stats, _empty_stats(),
+            turn_1_expect,
+            turn_1_resp,
+            [],
+            "model",
+            "",
+            citation_stats,
+            _empty_stats(),
         )
         _assert_turn(
-            turn_2_expect, turn_2_resp, [], "model", "",
-            citation_stats, _empty_stats(),
+            turn_2_expect,
+            turn_2_resp,
+            [],
+            "model",
+            "",
+            citation_stats,
+            _empty_stats(),
         )
 
-        assert citation_stats["total"] == 2, (
-            f"Expected 2 total citations, got {citation_stats}"
-        )
-        assert citation_stats["hits"] == 1, (
-            f"Expected 1 hit, got {citation_stats}"
-        )
+        assert citation_stats["total"] == 2, f"Expected 2 total citations, got {citation_stats}"
+        assert citation_stats["hits"] == 1, f"Expected 1 hit, got {citation_stats}"

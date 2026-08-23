@@ -254,9 +254,7 @@ class TestLookupOrderCancelledStaleEta:
     def test_message_communicates_cancellation(self) -> None:
         result = lookup_order("ORD-1004")
         # The message field or customer_safe_message should reference cancellation.
-        combined = " ".join(
-            filter(None, [result.message, result.customer_safe_message])
-        ).lower()
+        combined = " ".join(filter(None, [result.message, result.customer_safe_message])).lower()
         assert "cancel" in combined
 
     def test_serialized_stale_eta_not_present(self) -> None:
@@ -283,9 +281,7 @@ class TestLookupOrderReturnedStaleEta:
 
     def test_message_communicates_return(self) -> None:
         result = lookup_order("ORD-1008")
-        combined = " ".join(
-            filter(None, [result.message, result.customer_safe_message])
-        ).lower()
+        combined = " ".join(filter(None, [result.message, result.customer_safe_message])).lower()
         assert "return" in combined
 
     def test_serialized_stale_eta_not_present_in_estimated_delivery(self) -> None:

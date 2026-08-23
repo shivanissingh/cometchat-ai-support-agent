@@ -186,10 +186,9 @@ class TestConflictDetector:
         current_chunks = chunk_document(current_doc)
         trailplus_chunks = chunk_document(trailplus_doc)
 
-        all_retrieved = (
-            [_auth_retrieved(c) for c in current_chunks]
-            + [_auth_retrieved(c) for c in trailplus_chunks]
-        )
+        all_retrieved = [_auth_retrieved(c) for c in current_chunks] + [
+            _auth_retrieved(c) for c in trailplus_chunks
+        ]
 
         result = self.detector.detect(all_retrieved)
 
@@ -217,10 +216,9 @@ class TestConflictDetector:
         care_chunks = chunk_document(care_doc)
         card_chunks = chunk_document(card_doc)
 
-        all_retrieved = (
-            [_auth_retrieved(c) for c in care_chunks]
-            + [_auth_retrieved(c) for c in card_chunks]
-        )
+        all_retrieved = [_auth_retrieved(c) for c in care_chunks] + [
+            _auth_retrieved(c) for c in card_chunks
+        ]
 
         result = self.detector.detect(all_retrieved)
 
@@ -236,10 +234,9 @@ class TestConflictDetector:
         care_doc = parse_file(KB_DIR / "11-product-care.md")
         card_doc = parse_file(KB_DIR / "12-breeze-tumbler-product-card.md")
 
-        all_retrieved = (
-            [_auth_retrieved(c) for c in chunk_document(care_doc)]
-            + [_auth_retrieved(c) for c in chunk_document(card_doc)]
-        )
+        all_retrieved = [_auth_retrieved(c) for c in chunk_document(care_doc)] + [
+            _auth_retrieved(c) for c in chunk_document(card_doc)
+        ]
         result = self.detector.detect(all_retrieved)
 
         assert result.has_conflict is True
@@ -258,10 +255,9 @@ class TestConflictDetector:
         legacy_chunks = chunk_document(legacy_doc)
 
         # Legacy chunks are explicitly non-authoritative (is_authoritative=False).
-        all_retrieved = (
-            [_auth_retrieved(c) for c in current_chunks]
-            + [_nonauth_retrieved(c) for c in legacy_chunks]
-        )
+        all_retrieved = [_auth_retrieved(c) for c in current_chunks] + [
+            _nonauth_retrieved(c) for c in legacy_chunks
+        ]
 
         result = self.detector.detect(all_retrieved)
 
@@ -321,11 +317,7 @@ class TestConflictDetector:
         Topics with no registered extractor (e.g. 'warranty') should never
         produce a conflict, even if two authoritative chunks have different text.
         """
-        chunk_a = _make_chunk(
-            "w1", "Warranty is 1 year.", "warranty", filename="07-warranty.md"
-        )
-        chunk_b = _make_chunk(
-            "w2", "Warranty is 2 years.", "warranty", filename="07-warranty.md"
-        )
+        chunk_a = _make_chunk("w1", "Warranty is 1 year.", "warranty", filename="07-warranty.md")
+        chunk_b = _make_chunk("w2", "Warranty is 2 years.", "warranty", filename="07-warranty.md")
         result = self.detector.detect([_auth_retrieved(chunk_a), _auth_retrieved(chunk_b)])
         assert result.has_conflict is False

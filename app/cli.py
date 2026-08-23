@@ -65,12 +65,14 @@ root_logger.addHandler(logging.NullHandler())
 
 try:
     import huggingface_hub.utils.logging as hf_logging
+
     hf_logging.set_verbosity_error()
 except Exception:
     pass
 
 try:
     import transformers.utils.logging as tf_logging
+
     tf_logging.set_verbosity_error()
 except Exception:
     pass

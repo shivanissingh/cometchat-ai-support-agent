@@ -47,9 +47,7 @@ _logger = logging.getLogger("observability.tracer")
 # ---------------------------------------------------------------------------
 
 #: Set of lower-cased forbidden field names (from validator — single source).
-_FORBIDDEN_KEYS: frozenset[str] = frozenset(
-    name.lower() for name in _FORBIDDEN_FIELD_NAMES
-)
+_FORBIDDEN_KEYS: frozenset[str] = frozenset(name.lower() for name in _FORBIDDEN_FIELD_NAMES)
 
 # ---------------------------------------------------------------------------
 # Secret value scrubbing — GEMINI_API_KEY must never appear in logs
@@ -66,11 +64,7 @@ def _is_forbidden_key(key: str) -> bool:
 
 def _scrub_value(value: Any) -> Any:  # noqa: ANN401
     """Replace *value* with '[REDACTED]' if it matches the API key literal."""
-    if (
-        _API_KEY_VALUE
-        and isinstance(value, str)
-        and _API_KEY_VALUE in value
-    ):
+    if _API_KEY_VALUE and isinstance(value, str) and _API_KEY_VALUE in value:
         return "[REDACTED]"
     return value
 

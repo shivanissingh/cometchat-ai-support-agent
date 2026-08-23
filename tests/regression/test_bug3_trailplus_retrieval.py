@@ -4,6 +4,7 @@ tests/regression/test_bug3_trailplus_retrieval.py — Regression test for Bug 3.
 Bug 3: Retrieval Miss — TrailPlus Return Window Not Surfaced.
 Ensures that queries mentioning TrailPlus force 09-trailplus-membership.md into the evidence pack.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

@@ -121,9 +121,7 @@ class TestChunker:
         doc = parse_file(KB_DIR / "05-domestic-shipping.md")
         chunks = chunk_document(doc)
         for c in chunks:
-            assert "#" not in c.heading_path, (
-                f"heading_path contains '#': {c.heading_path!r}"
-            )
+            assert "#" not in c.heading_path, f"heading_path contains '#': {c.heading_path!r}"
 
     def test_specific_heading_path_value(self):
         """Verify exact heading_path for a known section."""
@@ -140,9 +138,7 @@ class TestChunker:
         docs = parse_all()
         for doc in docs:
             for chunk in chunk_document(doc):
-                assert chunk.text.strip(), (
-                    f"Empty chunk in {doc.filename}: {chunk.heading_path!r}"
-                )
+                assert chunk.text.strip(), f"Empty chunk in {doc.filename}: {chunk.heading_path!r}"
 
     def test_metadata_propagated_to_chunks(self):
         doc = parse_file(KB_DIR / "01-returns-policy-current.md")

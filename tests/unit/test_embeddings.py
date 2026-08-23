@@ -96,9 +96,7 @@ class TestBGEPrefixLogic:
         texts_passed = call_args[0][0]  # first positional arg
         # Passages must be passed as-is — no prefix on any of them.
         for p, t in zip(passages, texts_passed):
-            assert t == p, (
-                f"Passage was modified before embedding. Expected {p!r}, got {t!r}"
-            )
+            assert t == p, f"Passage was modified before embedding. Expected {p!r}, got {t!r}"
 
     def test_minilm_query_receives_no_prefix(self):
         """embed_query with all-MiniLM-L6-v2 must NOT prepend any prefix."""
@@ -113,9 +111,7 @@ class TestBGEPrefixLogic:
 
         call_args = mock_model.encode.call_args
         text_passed = call_args[0][0]
-        assert text_passed == query, (
-            f"MiniLM query must not be modified. Got: {text_passed!r}"
-        )
+        assert text_passed == query, f"MiniLM query must not be modified. Got: {text_passed!r}"
 
     def test_prefix_is_never_empty_string(self):
         """BGE_QUERY_PREFIX must be a non-empty, meaningful string."""

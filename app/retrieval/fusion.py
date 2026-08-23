@@ -31,13 +31,13 @@ RRF_K: int = 60
 # (add to / subtract from the raw RRF score)
 # ---------------------------------------------------------------------------
 
-BONUS_ACTIVE: float = 0.10          # status == "active"
-BONUS_OFFICIAL: float = 0.05        # policy_authority == "official"
-BONUS_CUSTOMER: float = 0.05        # audience == "customer"
+BONUS_ACTIVE: float = 0.10  # status == "active"
+BONUS_OFFICIAL: float = 0.05  # policy_authority == "official"
+BONUS_CUSTOMER: float = 0.05  # audience == "customer"
 BONUS_CUSTOMER_ANSWERING: float = 0.05  # customer_answering == True
 
-PENALTY_SUPERSEDED: float = -0.20   # status == "superseded"
-PENALTY_DRAFT: float = -0.15        # status == "draft"
+PENALTY_SUPERSEDED: float = -0.20  # status == "superseded"
+PENALTY_DRAFT: float = -0.15  # status == "draft"
 PENALTY_INTERNAL_STATUS: float = -0.15  # status == "internal"
 PENALTY_INTERNAL_AUDIENCE: float = -0.15  # audience == "internal"
 

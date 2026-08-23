@@ -24,10 +24,8 @@ from app.session.store import SESSION_STORE
 
 
 def _print_turn(label: str, session_id: str, question: str, response) -> None:  # noqa: ANN001
-    router_trace = next(
-        (e for e in response.trace if e.stage == "router"), None
-    )
-    print(f"\n{'='*70}")
+    router_trace = next((e for e in response.trace if e.stage == "router"), None)
+    print(f"\n{'=' * 70}")
     print(f"[{label}]")
     print(f"  Q: {question!r}")
     print(f"  A: {response.answer[:300]}{'...' if len(response.answer) > 300 else ''}")
@@ -98,7 +96,7 @@ def main() -> None:
     r6 = agent.handle_message("s6", "Can you cancel my order ORD-1005?")
     _print_turn("S6", "s6", "Can you cancel my order ORD-1005?", r6)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Smoke run complete.")
 
 

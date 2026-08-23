@@ -144,8 +144,9 @@ class TestMarkAuthoritative:
         current_chunks = chunk_document(current_doc)
         legacy_chunks = chunk_document(legacy_doc)
 
-        all_retrieved = [_make_retrieved(c, final_score=0.8) for c in current_chunks] + \
-                        [_make_retrieved(c, final_score=0.9) for c in legacy_chunks]
+        all_retrieved = [_make_retrieved(c, final_score=0.8) for c in current_chunks] + [
+            _make_retrieved(c, final_score=0.9) for c in legacy_chunks
+        ]
 
         results = mark_authoritative(all_retrieved)
 

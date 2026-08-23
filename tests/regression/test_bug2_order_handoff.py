@@ -5,6 +5,7 @@ Bug 2: Order Path Never Sets handoff=True.
 Ensures that unknown orders, exception-status orders, PII disclosure requests,
 and order cancellation requests return programmatic handoff=True.
 """
+
 from __future__ import annotations
 
 from unittest.mock import patch

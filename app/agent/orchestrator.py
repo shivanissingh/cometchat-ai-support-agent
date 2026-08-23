@@ -351,9 +351,7 @@ class Agent:
     ) -> AgentResponse:
         """Return a deterministic 'please provide your order ID' response."""
         tracer.emit("response", {"path": "order_ask_id", "deterministic": True})
-        answer = validate_response(
-            ORDER_ASK_ID_RESPONSE, [], session_id, turn_id
-        )
+        answer = validate_response(ORDER_ASK_ID_RESPONSE, [], session_id, turn_id)
         self._save_turn(session_id, text, answer, order_id=None, topic=None)
         return AgentResponse(
             answer=answer,
@@ -546,10 +544,9 @@ class Agent:
                 doc_scores[fn] = max(doc_scores.get(fn, 0.0), RELEVANCE_THRESHOLD)
                 doc_max[fn] = max(doc_max.get(fn, 0.0), RELEVANCE_THRESHOLD)
 
-            qualifying_files = (
-                {fn for fn, m in doc_max.items() if m >= RELEVANCE_THRESHOLD}
-                | forced_filenames
-            )
+            qualifying_files = {
+                fn for fn, m in doc_max.items() if m >= RELEVANCE_THRESHOLD
+            } | forced_filenames
 
             existing_by_id = {rc.chunk.chunk_id: rc for rc in auth_chunks}
             boosted_auth: list[RetrievedChunk] = []
@@ -676,9 +673,7 @@ class Agent:
         citations: list[dict[str, str]] = []
         for rc in relevant_auth:
             if rc.chunk.filename not in seen_files:
-                citations.append(
-                    {"filename": rc.chunk.filename, "heading": rc.chunk.heading_path}
-                )
+                citations.append({"filename": rc.chunk.filename, "heading": rc.chunk.heading_path})
                 seen_files.add(rc.chunk.filename)
         for rc in relevant_auth:
             if len(citations) >= _MAX_CITATIONS:
@@ -725,7 +720,9 @@ class Agent:
             established_order_id = order_result.order_id
 
         self._save_turn(
-            session_id, text, answer,
+            session_id,
+            text,
+            answer,
             order_id=established_order_id,
             topic=topic,
         )

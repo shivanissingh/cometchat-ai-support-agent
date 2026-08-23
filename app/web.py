@@ -168,10 +168,7 @@ if prompt := st.chat_input("Ask a question…"):
         "content": response.answer,
         "citations": response.citations,
         "handoff": response.handoff,
-        "trace": [
-            json.loads(event.model_dump_json())
-            for event in response.trace
-        ],
+        "trace": [json.loads(event.model_dump_json()) for event in response.trace],
     }
     st.session_state.messages.append(assistant_msg)
 

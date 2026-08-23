@@ -38,8 +38,7 @@ class DenseIndex:
     def __init__(self, chunk_ids: list[str], matrix: np.ndarray) -> None:
         if len(chunk_ids) != matrix.shape[0]:
             raise ValueError(
-                f"chunk_ids length {len(chunk_ids)} does not match "
-                f"matrix rows {matrix.shape[0]}"
+                f"chunk_ids length {len(chunk_ids)} does not match matrix rows {matrix.shape[0]}"
             )
         self._chunk_ids: list[str] = chunk_ids
         self._matrix: np.ndarray = matrix.astype(np.float32)
@@ -100,9 +99,7 @@ class DenseIndex:
         # argsort ascending → flip for descending
         top_indices = np.argsort(scores)[::-1][:top_k]
 
-        return [
-            (self._chunk_ids[int(i)], float(scores[int(i)])) for i in top_indices
-        ]
+        return [(self._chunk_ids[int(i)], float(scores[int(i)])) for i in top_indices]
 
     # ------------------------------------------------------------------
     # Accessors (useful for tests)

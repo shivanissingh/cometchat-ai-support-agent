@@ -103,6 +103,6 @@ def test_bug1_return_window_omission_live():
     )
 
     # d. '45' OR 'trailplus' appears in response.answer (case-insensitive)
-    assert ("45" in ans_lower or "trailplus" in ans_lower), (
+    assert "45" in ans_lower or "trailplus" in ans_lower, (
         f"Neither '45' nor 'trailplus' found in answer: {response.answer}"
     )

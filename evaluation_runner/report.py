@@ -14,6 +14,15 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 
+_GREEN = "\033[92m"
+_RED = "\033[91m"
+_YELLOW = "\033[93m"
+_BLUE = "\033[94m"
+_CYAN = "\033[96m"
+_BOLD = "\033[1m"
+_DIM = "\033[2m"
+_RESET = "\033[0m"
+
 
 @dataclass
 class CaseResult:
@@ -21,8 +30,8 @@ class CaseResult:
 
     case_id: str
     category: str
-    result: str   # "PASS", "FAIL", or "ERROR"
-    reason: str   # One-line explanation
+    result: str  # "PASS", "FAIL", or "ERROR"
+    reason: str  # One-line explanation
 
 
 def print_report(
@@ -31,43 +40,58 @@ def print_report(
     tool_arg_stats: dict,
     all_categories: list[str],
 ) -> None:
-    """Print the full evaluation report and exit with appropriate code.
+    """Print the formatted evaluation report and exit with appropriate code."""
+    w = 80
+    border = "═" * w
 
-    Parameters
-    ----------
-    results:
-        One CaseResult per case, in run order.
-    citation_stats:
-        {"hits": int, "total": int} - cross-case citation assertion counts.
-    tool_arg_stats:
-        {"hits": int, "total": int} - cross-case tool argument assertion counts.
-    all_categories:
-        Complete list of report categories (10) that must appear in the summary.
-    """
     print()
-    print("=" * 90)
-    print("EVALUATION REPORT")
-    print("=" * 90)
+    print(f"{_BOLD}{_CYAN}╔{border}╗{_RESET}")
+    print(f"{_BOLD}{_CYAN}║{'EVALUATION SUITE FINAL REPORT':^80}║{_RESET}")
+    print(f"{_BOLD}{_CYAN}╚{border}╝{_RESET}")
 
     # --- Per-case table ---
-    print()
-    print(f"{'CASE ID':<55} {'CATEGORY':<22} {'RESULT':<7} REASON")
-    print("-" * 90)
+    t_top = "┌" + "─" * 42 + "┬" + "─" * 16 + "┬" + "─" * 8 + "┬" + "─" * 26 + "┐"
+    t_mid = "├" + "─" * 42 + "┼" + "─" * 16 + "┼" + "─" * 8 + "┼" + "─" * 26 + "┤"
+    t_bot = "└" + "─" * 42 + "┴" + "─" * 16 + "┴" + "─" * 8 + "┴" + "─" * 26 + "┘"
+
+    print(f"\n{_BOLD}{t_top}{_RESET}")
+    hdr_cases = (
+        f"{_BOLD}│ {'CASE ID':<40} │ {'CATEGORY':<14} │ {'RESULT':<6} │ "
+        f"{'DETAILS / REASON':<24} │{_RESET}"
+    )
+    print(hdr_cases)
+    print(f"{_BOLD}{t_mid}{_RESET}")
 
     for r in results:
-        reason_trunc = r.reason[:35] if len(r.reason) > 35 else r.reason
-        result_icon = {"PASS": "PASS", "FAIL": "FAIL", "ERROR": "ERR "}.get(r.result, r.result)
-        print(
-            f"{r.case_id:<55} {r.category:<22} {result_icon:<7} {reason_trunc}"
-        )
+        cid = r.case_id[:40]
+        cat = r.category[:14]
+        if r.result == "PASS":
+            res_str = f"{_GREEN}{_BOLD}PASS{_RESET}  "
+            reason_str = f"{_GREEN}{r.reason[:24]:<24}{_RESET}"
+        elif r.result == "FAIL":
+            res_str = f"{_RED}{_BOLD}FAIL{_RESET}  "
+            reason_str = f"{_RED}{r.reason[:24]:<24}{_RESET}"
+        else:
+            res_str = f"{_YELLOW}{_BOLD}ERR {_RESET}  "
+            reason_str = f"{_YELLOW}{r.reason[:24]:<24}{_RESET}"
+
+        print(f"│ {cid:<40} │ {cat:<14} │ {res_str} │ {reason_str} │")
+
+    print(f"{_BOLD}{t_bot}{_RESET}")
 
     # --- Per-category summary ---
-    print()
-    print("=" * 60)
-    print("PER-CATEGORY SUMMARY")
-    print("=" * 60)
+    c_top = "┌" + "─" * 28 + "┬" + "─" * 14 + "┬" + "─" * 8 + "┬" + "─" * 14 + "┐"
+    c_mid = "├" + "─" * 28 + "┼" + "─" * 14 + "┼" + "─" * 8 + "┼" + "─" * 14 + "┤"
+    c_bot = "└" + "─" * 28 + "┴" + "─" * 14 + "┴" + "─" * 8 + "┴" + "─" * 14 + "┘"
 
-    # Count pass/total by category (based on case results).
+    print(f"\n{_BOLD}{_BLUE}{c_top}{_RESET}")
+    hdr_cat = (
+        f"{_BOLD}{_BLUE}│ {'Category':<26} │ {'Pass / Total':<12} │ "
+        f"{'Rate':<6} │ {'Status':<12} │{_RESET}"
+    )
+    print(hdr_cat)
+    print(f"{_BOLD}{_BLUE}{c_mid}{_RESET}")
+
     category_pass: dict[str, int] = {cat: 0 for cat in all_categories}
     category_total: dict[str, int] = {cat: 0 for cat in all_categories}
 
@@ -78,15 +102,11 @@ def print_report(
             if r.result == "PASS":
                 category_pass[cat] += 1
 
-    # Inject Citation and Tool arguments stats (they are per-assertion, not per-case).
-    # They are shown as hits/total assertions rather than cases.
     c_hits = citation_stats.get("hits", 0)
     c_total = citation_stats.get("total", 0)
     ta_hits = tool_arg_stats.get("hits", 0)
     ta_total = tool_arg_stats.get("total", 0)
 
-    print(f"{'Category':<25} {'Pass/Total':<12} {'%'}")
-    print("-" * 50)
     for cat in all_categories:
         if cat == "Citation":
             total = c_total
@@ -98,24 +118,43 @@ def print_report(
             total = category_total.get(cat, 0)
             passed = category_pass.get(cat, 0)
 
-        pct = f"{100 * passed // total}%" if total > 0 else "N/A"
-        print(f"  {cat:<23} {passed}/{total:<11} {pct}")
+        ratio_str = f"{passed}/{total}"
+        if total > 0:
+            pct_val = (100 * passed) // total
+            pct_str = f"{pct_val}%"
+            if pct_val == 100:
+                status_str = f"{_GREEN}✓ COMPLETE{_RESET}  "
+            elif pct_val >= 70:
+                status_str = f"{_YELLOW}⚡ PARTIAL{_RESET}   "
+            else:
+                status_str = f"{_RED}✗ ATTENTION{_RESET} "
+        else:
+            pct_str = "N/A"
+            status_str = f"{_DIM}- SKIPPED{_RESET}  "
+
+        print(f"│ {cat:<28} │ {ratio_str:<12} │ {pct_str:<6} │ {status_str} │")
+
+    print(f"{_BOLD}{_BLUE}{c_bot}{_RESET}")
 
     # --- Overall ---
-    print()
     total_cases = len(results)
     passed_cases = sum(1 for r in results if r.result == "PASS")
     failed_cases = sum(1 for r in results if r.result == "FAIL")
     error_cases = sum(1 for r in results if r.result == "ERROR")
 
-    print("=" * 60)
-    print(f"OVERALL: {passed_cases}/{total_cases} cases passed")
-    if failed_cases:
-        print(f"  FAIL:  {failed_cases} cases")
-    if error_cases:
-        print(f"  ERROR: {error_cases} cases")
-    print("=" * 60)
     print()
+    if failed_cases == 0 and error_cases == 0:
+        print(f"{_GREEN}{_BOLD}╔{border}╗{_RESET}")
+        msg = f"🎉 ALL EVALUATION CASES PASSED! ({passed_cases}/{total_cases})"
+        print(f"{_GREEN}{_BOLD}║{msg:^80}║{_RESET}")
+        print(f"{_GREEN}{_BOLD}╚{border}╝{_RESET}\n")
+    else:
+        print(f"{_RED}{_BOLD}╔{border}╗{_RESET}")
+        msg1 = f"OVERALL RESULTS: {passed_cases}/{total_cases} CASES PASSED"
+        msg2 = f"Passed: {passed_cases} | Failed: {failed_cases} | Errors: {error_cases}"
+        print(f"{_RED}{_BOLD}║{msg1:^80}║{_RESET}")
+        print(f"{_RED}{_BOLD}║{msg2:^80}║{_RESET}")
+        print(f"{_RED}{_BOLD}╚{border}╝{_RESET}\n")
 
     if failed_cases > 0 or error_cases > 0:
         sys.exit(1)

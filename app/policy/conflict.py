@@ -62,9 +62,7 @@ _DAY_COUNT_RE = re.compile(
 )
 
 # Keywords that identify a TrailPlus membership-conditional context.
-_TRAILPLUS_MARKERS = re.compile(
-    r"\btrailplus\b|\bmembership\b|\bmember\b", re.IGNORECASE
-)
+_TRAILPLUS_MARKERS = re.compile(r"\btrailplus\b|\bmembership\b|\bmember\b", re.IGNORECASE)
 
 
 def extract_day_count(chunk: Chunk) -> dict[str, str]:
@@ -210,9 +208,7 @@ class ConflictDetector:
                 continue  # No extractor for this topic — never flagged.
 
             # Collect (claim_key → {value: [chunks that said it]}) per topic.
-            claim_values: dict[str, dict[str, list[Chunk]]] = defaultdict(
-                lambda: defaultdict(list)
-            )
+            claim_values: dict[str, dict[str, list[Chunk]]] = defaultdict(lambda: defaultdict(list))
             for rc in group:
                 for claim_key, claim_val in extractor(rc.chunk).items():
                     claim_values[claim_key][claim_val].append(rc.chunk)

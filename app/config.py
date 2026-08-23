@@ -32,6 +32,7 @@ LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 # Structured JSON logging
 # ---------------------------------------------------------------------------
 
+
 class _JsonFormatter(logging.Formatter):
     """Emit one JSON object per log record, with a fixed set of fields.
 
@@ -49,11 +50,28 @@ class _JsonFormatter(logging.Formatter):
         # Callers must NOT pass secret values in extra — see module docstring.
         for key, value in record.__dict__.items():
             if key not in {
-                "name", "msg", "args", "levelname", "levelno",
-                "pathname", "filename", "module", "exc_info", "exc_text",
-                "stack_info", "lineno", "funcName", "created", "msecs",
-                "relativeCreated", "thread", "threadName", "processName",
-                "process", "message", "taskName",
+                "name",
+                "msg",
+                "args",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "message",
+                "taskName",
             }:
                 log_obj[key] = value
         return json.dumps(log_obj)
@@ -87,6 +105,7 @@ logger.info(
 # ---------------------------------------------------------------------------
 # Model resolution helper
 # ---------------------------------------------------------------------------
+
 
 def resolve_model(client) -> str:  # noqa: ANN001
     """Return the model name to use for the current request.

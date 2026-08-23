@@ -136,32 +136,52 @@ ALL_REPORT_CATEGORIES = [
 
 MUST_NOT_INVENT_VALUES: dict[str, list[str]] = {
     "order status": [
-        "pending", "processing", "shipped", "delivered",
-        "cancelled", "returned", "delayed", "exception",
+        "pending",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "returned",
+        "delayed",
+        "exception",
     ],
     "status": [
-        "pending", "processing", "shipped", "delivered",
-        "cancelled", "returned", "delayed", "exception",
+        "pending",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "returned",
+        "delayed",
+        "exception",
     ],
     "tracking number": [
         "tracking number is",
     ],
     "carrier": ["ups", "usps", "fedex", "canada post"],
     "delivery estimate": [
-        "will arrive", "estimated delivery",
+        "will arrive",
+        "estimated delivery",
     ],
     "arrival date": [
-        "will arrive", "arriving on",
+        "will arrive",
+        "arriving on",
     ],
     "material certification": [
-        "certified vegan", "vegan certified", "gots certified",
-        "bluesign", "oeko-tex",
+        "certified vegan",
+        "vegan certified",
+        "gots certified",
+        "bluesign",
+        "oeko-tex",
     ],
     "vegan guarantee": [
-        "all our products are vegan", "guaranteed vegan",
+        "all our products are vegan",
+        "guaranteed vegan",
     ],
     "whether the specific item qualifies without knowing its condition": [
-        "your item qualifies", "it is eligible for return", "return approved",
+        "your item qualifies",
+        "it is eligible for return",
+        "return approved",
     ],
 }
 
@@ -324,10 +344,7 @@ def _check_tool(trace: list, expected_tool: str, answer: str) -> str | None:
     tool_call_events = [e for e in trace if e.stage == "tool_call"]
 
     if expected_tool == "order_lookup":
-        names = [
-            e.payload.get("function", e.payload.get("name", ""))
-            for e in tool_call_events
-        ]
+        names = [e.payload.get("function", e.payload.get("name", "")) for e in tool_call_events]
         if not any("lookup_order" in n or n == "lookup_order" for n in names):
             return "tool: expected order_lookup tool call, found none in trace"
         return None
@@ -553,13 +570,29 @@ def _run_case(
     try:
         if is_schema_b:
             return _run_schema_b_case(
-                case_id, category, messages, expect, agent,
-                session_id, model, api_key, citation_stats, tool_arg_stats,
+                case_id,
+                category,
+                messages,
+                expect,
+                agent,
+                session_id,
+                model,
+                api_key,
+                citation_stats,
+                tool_arg_stats,
             )
         else:
             return _run_schema_a_case(
-                case_id, category, messages, expect, agent,
-                session_id, model, api_key, citation_stats, tool_arg_stats,
+                case_id,
+                category,
+                messages,
+                expect,
+                agent,
+                session_id,
+                model,
+                api_key,
+                citation_stats,
+                tool_arg_stats,
             )
     except Exception as exc:  # noqa: BLE001
         _logger.exception("ERROR running case %s: %s", case_id, exc)
@@ -589,7 +622,10 @@ def _run_schema_a_case(
         if i > 0:
             _logger.info(
                 "  [%s] sleeping %ds before turn %d/%d",
-                case_id, RATE_LIMIT_SLEEP_SECONDS, i + 1, len(messages),
+                case_id,
+                RATE_LIMIT_SLEEP_SECONDS,
+                i + 1,
+                len(messages),
             )
             time.sleep(RATE_LIMIT_SLEEP_SECONDS)
         response = agent.handle_message(session_id=session_id, text=msg["content"])
@@ -603,7 +639,13 @@ def _run_schema_a_case(
         )
 
     failures = _assert_turn(
-        expect, response, messages, model, api_key, citation_stats, tool_arg_stats,
+        expect,
+        response,
+        messages,
+        model,
+        api_key,
+        citation_stats,
+        tool_arg_stats,
     )
 
     if failures:
@@ -640,7 +682,10 @@ def _run_schema_b_case(
         if i > 0:
             _logger.info(
                 "  [%s] sleeping %ds before turn %d/%d (Schema B)",
-                case_id, RATE_LIMIT_SLEEP_SECONDS, i + 1, len(messages),
+                case_id,
+                RATE_LIMIT_SLEEP_SECONDS,
+                i + 1,
+                len(messages),
             )
             time.sleep(RATE_LIMIT_SLEEP_SECONDS)
 
@@ -650,8 +695,13 @@ def _run_schema_b_case(
         if turn_key in expect:
             turn_expect = expect[turn_key]
             failures = _assert_turn(
-                turn_expect, response, messages[: i + 1],
-                model, api_key, citation_stats, tool_arg_stats,
+                turn_expect,
+                response,
+                messages[: i + 1],
+                model,
+                api_key,
+                citation_stats,
+                tool_arg_stats,
             )
             if failures:
                 all_failures.append(f"[{turn_key}] {failures[0]}")
@@ -687,24 +737,35 @@ def _run_case_with_retry(
     """Wrap _run_case with a single retry on transient errors."""
     try:
         return _run_case(
-            case, agent, model, api_key, citation_stats, tool_arg_stats,
+            case,
+            agent,
+            model,
+            api_key,
+            citation_stats,
+            tool_arg_stats,
         )
     except Exception as exc:  # noqa: BLE001
         exc_str = str(exc)
         is_transient = any(
-            code in exc_str
-            for code in ("429", "503", "UNAVAILABLE", "ResourceExhausted")
+            code in exc_str for code in ("429", "503", "UNAVAILABLE", "ResourceExhausted")
         ) or any(term in exc_str.lower() for term in ("quota", "rate", "demand", "temporar"))
         if is_transient:
             sleep_secs = RATE_LIMIT_SLEEP_SECONDS * 2
             _logger.warning(
                 "Transient error (%s) for case %s. Retrying after %ds...",
-                exc_str[:80], case["id"], sleep_secs,
+                exc_str[:80],
+                case["id"],
+                sleep_secs,
             )
             time.sleep(sleep_secs)
             try:
                 return _run_case(
-                    case, agent, model, api_key, citation_stats, tool_arg_stats,
+                    case,
+                    agent,
+                    model,
+                    api_key,
+                    citation_stats,
+                    tool_arg_stats,
                 )
             except Exception as exc2:  # noqa: BLE001
                 return report.CaseResult(
@@ -721,83 +782,116 @@ def _run_case_with_retry(
 # ---------------------------------------------------------------------------
 
 
+_GREEN = "\033[92m"
+_RED = "\033[91m"
+_YELLOW = "\033[93m"
+_BLUE = "\033[94m"
+_CYAN = "\033[96m"
+_BOLD = "\033[1m"
+_DIM = "\033[2m"
+_RESET = "\033[0m"
+
+
 def main() -> None:
     """Entry point for the evaluation harness."""
     from dotenv import load_dotenv
 
     load_dotenv()
 
-    api_key = os.environ.get("GEMINI_API_KEY", "")
-    if not api_key:
-        _logger.warning("GEMINI_API_KEY not set - grading calls will fail")
+    # Route background logger noise to logs/evaluation.log
+    os.makedirs("logs", exist_ok=True)
+    file_handler = logging.FileHandler("logs/evaluation.log", mode="w")
+    file_handler.setFormatter(
+        logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    )
+    root = logging.getLogger()
+    root.handlers.clear()
+    root.addHandler(file_handler)
+    root.setLevel(logging.INFO)
 
-    eval_models = _get_eval_models()
-    _logger.info("Eval models: %s", eval_models)
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+
+    from app.agent.model_manager import GLOBAL_MODEL_MANAGER
 
     cases = _load_cases()
     total = len(cases)
-    _logger.info("Running %d cases total", total)
 
-    _logger.info("Building knowledge index (this may take a moment)...")
+    w = 80
+    border = "═" * w
+
+    print()
+    print(f"{_BOLD}{_CYAN}╔{border}╗{_RESET}")
+    print(f"{_BOLD}{_CYAN}║{'ASTER & ROW AI SUPPORT AGENT — EVALUATION SUITE':^80}║{_RESET}")
+    print(f"{_BOLD}{_CYAN}╚{border}╝{_RESET}")
+    print(f"  {_BOLD}Total Test Cases:{_RESET} {total} (15 visible + 10 original)")
+    print(f"  {_BOLD}Model Pool:{_RESET}       {', '.join(GLOBAL_MODEL_MANAGER.models)}")
+    print(
+        f"  {_BOLD}Rate Limiting:{_RESET}    Strict <= 3 RPM | Daily Caps: 18 (Flash) / 490 (Lite)"
+    )
+    print(f"  {_BOLD}Detailed Logs:{_RESET}    logs/evaluation.log\n")
+
+    print(f"{_CYAN}⚙ Initializing Knowledge Base indexes...{_RESET}", flush=True)
     kb_index = _KnowledgeIndex()
     agent = Agent(knowledge_index=kb_index)
-
-    batch_boundaries = [(0, 9), (9, 18), (18, total)]
+    print(f"{_GREEN}✓ Knowledge Base initialized successfully.{_RESET}\n")
 
     all_results: list[report.CaseResult] = []
     citation_stats: dict = {"hits": 0, "total": 0}
     tool_arg_stats: dict = {"hits": 0, "total": 0}
 
-    first_batch = True
-    for batch_idx, (start, end) in enumerate(batch_boundaries):
-        batch_cases = cases[start:end]
-        if not batch_cases:
-            continue
+    print(
+        f"{_BOLD}═══════════════════════ RUNNING EVALUATION CASES ═══════════════════════{_RESET}"
+    )
 
-        if not first_batch:
-            _logger.info(
-                "=== Pausing %ds before batch %d (model rotation) ===",
-                BATCH_PAUSE_SECONDS, batch_idx + 1,
-            )
-            print(f"\n=== Pausing {BATCH_PAUSE_SECONDS}s before batch {batch_idx + 1} ===\n")
-            time.sleep(BATCH_PAUSE_SECONDS)
+    for idx, case in enumerate(cases, 1):
+        case_id = case["id"]
+        raw_category = case.get("category", "unknown")
+        category = CATEGORY_MAP.get(raw_category, raw_category)
+        messages = case.get("messages", [])
+        active_model_str = GLOBAL_MODEL_MANAGER.get_model_status_str()
 
-        model = eval_models[batch_idx]
-        from app import config as app_config
-        from app.agent import llm_client
-
-        app_config.GEMINI_MODEL = model
-        llm_client._resolved_model = model
-        os.environ["GEMINI_MODEL"] = model
-
-        _logger.info(
-            "=== Batch %d/%d: cases %d-%d using model '%s' ===",
-            batch_idx + 1, len(batch_boundaries), start, end - 1, model,
-        )
         print(
-            f"\n=== Batch {batch_idx + 1}/3: cases index {start}-{end - 1} "
-            f"| model: {model} ===\n"
+            f"\n{_BOLD}┌─ [Case {idx:02d}/{total:02d}] "
+            f"{_BLUE}{case_id}{_RESET}{_BOLD} (Category: {category}){_RESET}"
         )
+        print(f"│  {_DIM}Active Model:{_RESET} {active_model_str}")
 
-        first_case = True
-        for case in batch_cases:
-            if not first_case:
-                _logger.info("Sleeping %ds (rate limit)...", RATE_LIMIT_SLEEP_SECONDS)
-                time.sleep(RATE_LIMIT_SLEEP_SECONDS)
+        if len(messages) == 1:
+            query_snippet = messages[0].get("content", "").replace("\n", " ")
+            if len(query_snippet) > 80:
+                query_snippet = query_snippet[:77] + "..."
+            print(f'│  {_DIM}Query:{_RESET} "{query_snippet}"')
+        else:
+            print(f"│  {_DIM}Multi-turn ({len(messages)} turns):{_RESET}")
+            for t_idx, msg in enumerate(messages, 1):
+                t_snip = msg.get("content", "").replace("\n", " ")
+                if len(t_snip) > 70:
+                    t_snip = t_snip[:67] + "..."
+                print(f'│    • Turn {t_idx}: "{t_snip}"')
 
-            case_id = case["id"]
-            _logger.info("Running case: %s", case_id)
-            print(f"  Running: {case_id}")
+        result = _run_case_with_retry(
+            case,
+            agent,
+            GLOBAL_MODEL_MANAGER.get_current_model(),
+            api_key,
+            citation_stats,
+            tool_arg_stats,
+        )
+        all_results.append(result)
 
-            result = _run_case_with_retry(
-                case, agent, model, api_key, citation_stats, tool_arg_stats,
-            )
-            all_results.append(result)
-            print(f"    -> {result.result}: {result.reason}")
+        if result.result == "PASS":
+            pass_str = f"{_GREEN}{_BOLD}✓ PASS{_RESET} {_GREEN}({result.reason}){_RESET}"
+            print(f"│  {_BOLD}Result:{_RESET} {pass_str}")
+        elif result.result == "FAIL":
+            print(f"│  {_BOLD}Result:{_RESET} {_RED}{_BOLD}✗ FAIL{_RESET}")
+            print(f"│  {_RED}{_BOLD}Reason:{_RESET} {_RED}{result.reason}{_RESET}")
+        else:
+            print(f"│  {_BOLD}Result:{_RESET} {_YELLOW}{_BOLD}⚠ ERROR{_RESET}")
+            print(f"│  {_YELLOW}{_BOLD}Reason:{_RESET} {_YELLOW}{result.reason}{_RESET}")
 
-            first_case = False
-
-        first_batch = False
+        print(
+            f"{_BOLD}└────────────────────────────────────────────────────────────────────────┘{_RESET}"
+        )
 
     report.print_report(
         results=all_results,

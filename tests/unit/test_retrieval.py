@@ -101,9 +101,7 @@ class TestBM25Index:
 
 
 class TestDenseIndex:
-    def _build_index_with_matrix(
-        self, chunk_ids: list[str], matrix: np.ndarray
-    ) -> DenseIndex:
+    def _build_index_with_matrix(self, chunk_ids: list[str], matrix: np.ndarray) -> DenseIndex:
         return DenseIndex(chunk_ids=chunk_ids, matrix=matrix)
 
     def test_top_ranked_chunk_is_most_similar(self):
@@ -187,9 +185,7 @@ class TestRRF:
         results = reciprocal_rank_fusion(dense_ranking, bm25_ranking, index, top_k=3)
 
         result_ids = [r.chunk.chunk_id for r in results]
-        assert result_ids[0] == "A", (
-            f"Expected A first (top in both), got {result_ids}"
-        )
+        assert result_ids[0] == "A", f"Expected A first (top in both), got {result_ids}"
         # A beats B because A appears in both rankings.
         a_score = next(r.final_score for r in results if r.chunk.chunk_id == "A")
         b_score = next(r.final_score for r in results if r.chunk.chunk_id == "B")
@@ -198,8 +194,14 @@ class TestRRF:
     def test_rrf_score_formula(self):
         """Verify the exact RRF formula: sum(1 / (60 + rank))."""
         # Single chunk ranked #1 in dense and #2 in BM25.
-        chunk_a = _make_chunk("A", "test", status="draft", policy_authority="unofficial",
-                               audience="internal", customer_answering=False)
+        chunk_a = _make_chunk(
+            "A",
+            "test",
+            status="draft",
+            policy_authority="unofficial",
+            audience="internal",
+            customer_answering=False,
+        )
         dense = [("A", 1.0)]
         bm25 = [("X", 2.0), ("A", 1.0)]  # A is rank 2 in BM25
 
@@ -212,12 +214,22 @@ class TestRRF:
 
     def test_metadata_bonus_for_active_official_customer(self):
         """Active/official/customer chunk gets all bonuses applied."""
-        chunk_good = _make_chunk("good", "text", status="active",
-                                 policy_authority="official", audience="customer",
-                                 customer_answering=True)
-        chunk_bad = _make_chunk("bad", "text", status="superseded",
-                                policy_authority="official", audience="customer",
-                                customer_answering=True)
+        chunk_good = _make_chunk(
+            "good",
+            "text",
+            status="active",
+            policy_authority="official",
+            audience="customer",
+            customer_answering=True,
+        )
+        chunk_bad = _make_chunk(
+            "bad",
+            "text",
+            status="superseded",
+            policy_authority="official",
+            audience="customer",
+            customer_answering=True,
+        )
 
         # Same rank in both lists → same RRF raw score.
         dense = [("good", 0.9), ("bad", 0.8)]
@@ -234,9 +246,14 @@ class TestRRF:
         )
 
     def test_superseded_penalty_reduces_final_score_below_rrf(self):
-        chunk = _make_chunk("s", "text", status="superseded",
-                            policy_authority="official", audience="customer",
-                            customer_answering=True)
+        chunk = _make_chunk(
+            "s",
+            "text",
+            status="superseded",
+            policy_authority="official",
+            audience="customer",
+            customer_answering=True,
+        )
         dense = [("s", 1.0)]
         bm25 = [("s", 5.0)]
         results = reciprocal_rank_fusion(dense, bm25, {"s": chunk}, top_k=1)

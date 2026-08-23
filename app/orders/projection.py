@@ -104,8 +104,7 @@ def build_safe_result(
             status="unknown",
             found=False,
             message=(
-                "We couldn't find an order with that ID. "
-                "Please verify the order ID and try again."
+                "We couldn't find an order with that ID. Please verify the order ID and try again."
             ),
         )
 

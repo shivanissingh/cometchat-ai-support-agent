@@ -94,9 +94,7 @@ class BM25Index:
 
         top_indices = np.argsort(scores)[::-1][:top_k]
 
-        return [
-            (self._chunk_ids[int(i)], float(scores[int(i)])) for i in top_indices
-        ]
+        return [(self._chunk_ids[int(i)], float(scores[int(i)])) for i in top_indices]
 
     # ------------------------------------------------------------------
     # Accessor

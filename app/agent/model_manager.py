@@ -16,11 +16,21 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 import time
 from collections import deque
 from dataclasses import dataclass, field
 
 _logger = logging.getLogger(__name__)
+
+# ANSI Color codes for beautiful terminal output
+_GREEN = "[92m"
+_RED = "[91m"
+_YELLOW = "[93m"
+_BLUE = "[94m"
+_CYAN = "[96m"
+_BOLD = "[1m"
+_RESET = "[0m"
 
 # The 6 canonical model options in preference order
 DEFAULT_MODELS: list[str] = [
@@ -87,7 +97,6 @@ class ModelStats:
 
         # Sliding window check: ensure < MAX_RPM calls in the last 60s
         if len(self.call_timestamps) >= MAX_RPM:
-            # Need to wait until the oldest timestamp in the window expires
             oldest = self.call_timestamps[0]
             window_needed = (oldest + WINDOW_SECONDS) - now + 0.5
             if window_needed > wait:
@@ -116,12 +125,30 @@ class ModelManager:
         """Mark a model as having exhausted its daily quota and advance to next model."""
         if model in self.stats:
             self.stats[model].quota_exhausted = True
-            _logger.warning(
-                "Model %s daily quota reached or exhausted (%s); switching to next model in pool.",
-                model,
-                reason,
+            self._print_rotation_event(
+                old_model=model,
+                reason=reason,
             )
         self._advance_to_next_available()
+
+    def _print_rotation_event(self, old_model: str, reason: str) -> None:
+        """Print a formatted banner when model rotation occurs."""
+        b = "═" * 70
+        print(f"\n{_YELLOW}╔{b}╗{_RESET}", flush=True)
+        print(f"{_YELLOW}║ 🔄 MODEL ROTATION EVENT{' ':45}║{_RESET}", flush=True)
+        prev_line = f"║    Prev: {_BOLD}{old_model:<18}{_RESET}{_YELLOW} Reason: {reason:<24}║"
+        print(f"{_YELLOW}{prev_line}{_RESET}", flush=True)
+        self._advance_to_next_available()
+        new_model = self.models[self._current_index]
+        cap = self.stats[new_model].rpd_cap
+        calls = self.stats[new_model].daily_count
+        quota_str = f"{calls}/{cap} calls"
+        act_line = (
+            f"║    Active: {_GREEN}{_BOLD}{new_model:<16}{_RESET}"
+            f"{_YELLOW} Quota: {quota_str:<19}║"
+        )
+        print(f"{_YELLOW}{act_line}{_RESET}", flush=True)
+        print(f"{_YELLOW}╚{b}╝{_RESET}\n", flush=True)
 
     def _advance_to_next_available(self) -> None:
         """Advance _current_index to the next model with daily quota remaining."""
@@ -129,17 +156,10 @@ class ModelManager:
             idx = (self._current_index + offset) % len(self.models)
             m = self.models[idx]
             if self.stats[m].is_rpd_available():
-                if idx != self._current_index:
-                    _logger.info(
-                        "Daily limit cap reached on previous model; switched to %s (cap: %d)",
-                        m,
-                        self.stats[m].rpd_cap,
-                    )
                 self._current_index = idx
                 return
 
         # If all models exhausted daily cap, reset Lite models as fallback
-        _logger.warning("All 6 models reached daily caps. Re-enabling Lite models as fallback.")
         for m in self.models:
             if "lite" in m.lower():
                 self.stats[m].quota_exhausted = False
@@ -154,6 +174,12 @@ class ModelManager:
         self._advance_to_next_available()
         return self.models[self._current_index]
 
+    def get_model_status_str(self) -> str:
+        """Return formatted status string for terminal display."""
+        model = self.get_current_model()
+        st = self.stats[model]
+        return f"{model} (Calls: {st.daily_count}/{st.rpd_cap})"
+
     def acquire_call_slot(self) -> str:
         """Select the active model and sleep the required gap to strictly enforce RPM <= 3.
 
@@ -162,22 +188,20 @@ class ModelManager:
         model = self.get_current_model()
         st = self.stats[model]
 
-        # Check if the active model reached daily cap
         if not st.is_rpd_available():
+            old = model
             self._advance_to_next_available()
             model = self.get_current_model()
+            self._print_rotation_event(old_model=old, reason=f"Daily Cap ({st.rpd_cap}) Reached")
             st = self.stats[model]
 
-        # Calculate exact timer wait needed to guarantee RPM <= 3
         now = time.time()
         wait = st.calculate_rpm_wait(now)
 
         if wait > 0:
-            _logger.info(
-                "Strict RPM pacing (cap 3/min): sleeping %.1fs before next call on model %s...",
-                wait,
-                model,
-            )
+            msg = f"  {_CYAN}⏱ [Rate Pacing] Waiting {wait:.1f}s (<= 3 RPM) on {model}...{_RESET}\n"
+            sys.stdout.write(msg)
+            sys.stdout.flush()
             time.sleep(wait)
 
         return model
@@ -203,15 +227,10 @@ class ModelManager:
             },
         )
 
-        # If model just reached its daily cap, advance to the next model for subsequent calls
         if st.daily_count >= st.rpd_cap:
-            _logger.warning(
-                "Model %s reached daily cap (%d/%d calls); will rotate for next call.",
-                model,
-                st.daily_count,
-                st.rpd_cap,
-            )
+            old = model
             self._advance_to_next_available()
+            self._print_rotation_event(old_model=old, reason=f"Daily Cap ({st.rpd_cap}) Reached")
 
 
 GLOBAL_MODEL_MANAGER = ModelManager()
