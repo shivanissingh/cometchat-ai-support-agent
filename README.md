@@ -157,58 +157,59 @@ The architecture separates deterministic business logic from probabilistic LLM g
 ## Development Timeline & Commit History
 
 ```mermaid
-flowchart LR
-    subgraph Day1["Day 1: Aug 22, 2026 - Core Architecture"]
-        direction TB
-        c1["cd7fb59: Project Init"] --> c2["91dee67: KB & Hybrid Search"]
-        c2 --> c3["260ed6d: Whitelist Order Tool"]
-        c3 --> c4["f9e0392: Agent Core & Rules"]
-        c4 --> c5["749d7ce: CLI & Web UI"]
-    end
-
-    subgraph Pause["Overnight Pause: ~15 Hours"]
-        direction TB
-        p1["Rate Limit Hit (RPD Exceeded)<br/>Development paused overnight<br/>Resumed next day at ~12:11"]
-    end
-
-    subgraph Day2["Day 2: Aug 23, 2026 - Evaluation & Hardening"]
-        direction TB
-        c6["8a60e3a: 10 Original Cases"] --> c7["fb7ee1c: Fix Bug 1 (Sibling Boost)"]
-        c7 --> c8["bf7a0f5: 25-Case Eval Harness"]
-        c8 --> c9["ec840ab: Fix Bugs 2 & 3 (Handoff)"]
-        c9 --> c10["d7a67ef / 7a4b9e4: Model Manager"]
-        c10 --> c11["cc8e17d: 4-Tier Model Failover"]
-        c11 --> c12["3082e14: PII & Warranty Rules"]
-        c12 --> c13["1b5ce16: Fix Bugs 4-7 (Prompt Rules)"]
-        c13 --> c14["dcb74cf: Bug Diary Docs"]
-        c14 --> c15["8f76529: Modern Web UI Overhaul"]
-    end
-
-    Day1 --> Pause --> Day2
+timeline
+    title Aster & Row Support Agent Development Timeline
+    section Day 1: Aug 22, 2026
+        18:31 : cd7fb59 Project initialization & modular architecture
+        19:12 : 91dee67 Knowledge ingestion & hybrid BGE/BM25 retrieval
+        19:33 : 260ed6d Whitelist order projection DTO & normalization
+        20:30 : f9e0392 Core orchestrator engine & prompt rules preamble
+        21:20 : 749d7ce Interactive CLI & Streamlit web UI with trace scrubbing
+    section Overnight Pause
+        21:20 to 12:11 : Quota Exhaustion (RPD Hit) — Development paused overnight
+    section Day 2: Aug 23, 2026
+        12:41 : 8a60e3a Authored 10 original boundary test cases
+        13:55 : fb7ee1c Fix Bug 1 (Sibling chunk boost for return window)
+        15:07 : bf7a0f5 Automated 25-case evaluation runner & reporting
+        15:35 : ec840ab Fix Bugs 2 & 3 (Order handoff & TrailPlus retrieval)
+        16:32 : d7a67ef Dedicated model manager & stricter intent routing
+        16:43 : 7a4b9e4 Model manager CLI feedback & formatting
+        18:09 : cc8e17d 4-Tier model failover pool (3.7 -> 3.6 -> 3.5 -> 3.5-lite)
+        18:48 : 3082e14 PII inquiry handoff & category warranty logic
+        19:38 : 1b5ce16 Fix Bugs 4-7 (Non-echo prompt rules & boundaries)
+        20:27 : dcb74cf Comprehensive bug diary documentation
+        20:42 : 8f76529 Modern Web UI overhaul & debug trace inspector
 ```
 
-### Commit Milestones & Impact Matrix
+<details>
+<summary><b>Click to expand interactive phase milestones breakdown</b></summary>
 
-| Phase | Time (IST) | Commit | Scope | Technical Milestone & Impact |
-|---|---|:---:|---|---|
-| **Phase 1: Foundation** | Aug 22, 18:31 | `cd7fb59` | Setup | Standardized repository layout, virtual environment, and dependency specifications. |
-| | Aug 22, 19:12 | `91dee67` | Ingestion | Built Markdown parser, BGE dense embeddings, BM25 index, and topic conflict extractors. |
-| | Aug 22, 19:33 | `260ed6d` | Security | Implemented whitelist DTO projection (`SafeOrderResult`) and order ID normalization. |
-| | Aug 22, 20:30 | `f9e0392` | Core Engine | Developed orchestrator pipeline, system prompt rules, and structured trace emitter. |
-| | Aug 22, 21:20 | `749d7ce` | Interfaces | Deployed terminal CLI (`--debug`) and Streamlit web app with automatic PII redaction. |
-| **Quota Pause** | *Aug 22, 21:20* | *PAUSE* | *Rate Limit* | *Exhausted Gemini free-tier daily requests (RPD). Paused overnight for ~15 hours.* |
-| **Resumption** | *Aug 23, 12:11* | *RESUME* | *Resumption* | *Resumed development 30 minutes prior to first commit to architect model pool failover.* |
-| **Phase 2: Reliability** | Aug 23, 12:41 | `8a60e3a` | Benchmarks | Authored `evaluation/original-cases.json` covering 10 challenging edge scenarios. |
-| | Aug 23, 13:55 | `fb7ee1c` | Bug Fix | Resolved Bug 1: Added same-document sibling boosting to prevent return window omissions. |
-| | Aug 23, 15:07 | `bf7a0f5` | Evaluation | Built automated 25-case evaluation runner and 10-category reporting harness. |
-| | Aug 23, 15:35 | `ec840ab` | Bug Fix | Resolved Bugs 2 & 3: Dynamic order handoff logic and keyword-forced TrailPlus inclusion. |
-| | Aug 23, 16:32 | `d7a67ef` | Management | Added dedicated model resolution, citation format enforcement, and stricter routing. |
-| | Aug 23, 16:43 | `7a4b9e4` | Refactoring | Enhanced CLI model rotation feedback and standardized code formatting. |
-| | Aug 23, 18:09 | `cc8e17d` | Resilience | Automated 4-tier model failover pool (`gemini-3.7-flash` -> `3.6` -> `3.5` -> `3.5-lite`). |
-| | Aug 23, 18:48 | `3082e14` | Policy Guardrails | Added explicit PII inquiry handoff logic and refined category warranty instructions. |
-| | Aug 23, 19:38 | `1b5ce16` | Bug Fix | Resolved Bugs 4-7: Rewrote prompt rules to eliminate phrase echoes and fix temporal boundaries. |
-| | Aug 23, 20:27 | `dcb74cf` | Documentation | Documented 7 detailed bug entries with reproduction, root causes, and regression tests. |
-| | Aug 23, 20:42 | `8f76529` | Polish | Modern CSS overhaul for Streamlit web app, prompt pills, and interactive trace inspector. |
+### Phase 1: Foundation & Core Interfaces (Saturday, Aug 22, 2026)
+- `cd7fb59` (18:31 IST): Repository initialization, package scaffolding, and config setup.
+- `91dee67` (19:12 IST): Markdown parser, BGE vector embeddings, BM25 indexing, and topic conflict extractors.
+- `260ed6d` (19:33 IST): Whitelist DTO projection (`SafeOrderResult`) and order normalization regex.
+- `f9e0392` (20:30 IST): Core orchestrator pipeline, system rules preamble, and structured trace emitter.
+- `749d7ce` (21:20 IST): Interactive CLI (`--debug`) and Streamlit web UI with automatic trace scrubbing.
+
+### Overnight Pause: Rate Limit Quota Exhaustion (~15 Hours)
+- At 21:20 IST, Gemini free-tier daily request quota (RPD) was exhausted on the initial API key.
+- Development was paused overnight until quota reset was pending.
+- Resumed next day at ~12:11 IST (30 minutes prior to the first commit) with the design of a dynamic 4-tier model failover pool.
+
+### Phase 2: Evaluation, Resilience & Bug Remediation (Sunday, Aug 23, 2026)
+- `8a60e3a` (12:41 IST): Authored `evaluation/original-cases.json` covering 10 challenging boundary scenarios.
+- `fb7ee1c` (13:55 IST): Resolved Bug 1 by implementing same-document sibling chunk boosting for returns.
+- `bf7a0f5` (15:07 IST): Built automated 25-case evaluation runner and 10-category reporting harness.
+- `ec840ab` (15:35 IST): Resolved Bugs 2 & 3 with dynamic order handoff signals and keyword-forced TrailPlus retrieval.
+- `d7a67ef` (16:32 IST): Added dedicated model resolution, citation format enforcement, and stricter routing.
+- `7a4b9e4` (16:43 IST): Enhanced CLI model rotation feedback and standardized code formatting.
+- `cc8e17d` (18:09 IST): Automated 4-tier model failover pool (`gemini-3.7-flash` -> `3.6` -> `3.5` -> `3.5-lite`) to eliminate rate limits.
+- `3082e14` (18:48 IST): Added explicit PII inquiry handoff logic and refined category warranty instructions.
+- `1b5ce16` (19:38 IST): Resolved Bugs 4, 5, 6, 7 by eliminating forbidden phrase echoes and handling temporal order cancellation states.
+- `dcb74cf` (20:27 IST): Documented 7 detailed bug entries with reproduction steps, root causes, and regression tests.
+- `8f76529` (20:42 IST): Modern CSS overhaul for Streamlit web app, prompt suggestion pills, and interactive trace inspector.
+
+</details>
 
 ---
 
