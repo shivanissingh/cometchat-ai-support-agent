@@ -72,6 +72,9 @@ _logger = logging.getLogger(__name__)
 #: Minimum final_score for an authoritative chunk to be considered evidence.
 RELEVANCE_THRESHOLD: float = 0.10
 
+#: Whether to include all authoritative sibling chunks from qualifying documents.
+ENABLE_SIBLING_BOOST: bool = True
+
 #: Number of top candidates to retrieve from each index before fusion.
 RETRIEVAL_TOP_K: int = 10
 
@@ -391,8 +394,55 @@ class Agent:
             },
         )
 
-        # Filter to chunks above the relevance threshold.
-        relevant_auth = [c for c in auth_chunks if c.final_score >= RELEVANCE_THRESHOLD]
+        # Filter to chunks above the relevance threshold, applying sibling boost if enabled.
+        if ENABLE_SIBLING_BOOST:
+            doc_scores: dict[str, float] = {}
+            doc_max: dict[str, float] = {}
+            for rc in auth_chunks:
+                fn = rc.chunk.filename
+                doc_scores[fn] = doc_scores.get(fn, 0.0) + rc.final_score
+                if fn not in doc_max or rc.final_score > doc_max[fn]:
+                    doc_max[fn] = rc.final_score
+
+            qualifying_files = {fn for fn, m in doc_max.items() if m >= RELEVANCE_THRESHOLD}
+
+            existing_by_id = {rc.chunk.chunk_id: rc for rc in auth_chunks}
+            boosted_auth: list[RetrievedChunk] = []
+
+            if hasattr(self._kb, "chunk_index") and self._kb.chunk_index:
+                for chunk_id, chunk in self._kb.chunk_index.items():
+                    if chunk.filename in qualifying_files:
+                        is_auth = (
+                            chunk.status == "active"
+                            and chunk.policy_authority == "official"
+                            and chunk.audience == "customer"
+                        )
+                        if is_auth:
+                            if chunk_id in existing_by_id:
+                                boosted_auth.append(existing_by_id[chunk_id])
+                            else:
+                                boosted_auth.append(
+                                    RetrievedChunk(
+                                        chunk=chunk,
+                                        dense_score=0.0,
+                                        bm25_score=0.0,
+                                        rrf_score=0.0,
+                                        final_score=doc_max.get(
+                                            chunk.filename, RELEVANCE_THRESHOLD
+                                        ),
+                                        is_authoritative=True,
+                                    )
+                                )
+            else:
+                boosted_auth = [c for c in auth_chunks if c.chunk.filename in qualifying_files]
+
+            boosted_auth.sort(
+                key=lambda rc: (doc_scores.get(rc.chunk.filename, 0.0), rc.final_score),
+                reverse=True,
+            )
+            relevant_auth = boosted_auth
+        else:
+            relevant_auth = [c for c in auth_chunks if c.final_score >= RELEVANCE_THRESHOLD]
 
         # --- Abstention gate ---------------------------------------------
         if not relevant_auth:

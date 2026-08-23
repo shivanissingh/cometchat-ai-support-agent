@@ -50,6 +50,10 @@ RULES:
    section.  Never recall or invent order details from memory.
 10. If an order ID is required to answer the question but has not been
     provided, ask the customer for their order ID before proceeding.
+11. When the evidence pack contains multiple sections from the primary
+    authoritative source, your answer must synthesize all of them. Never
+    omit the most fundamental facts (e.g., the return window duration itself)
+    in favour of secondary details (e.g., fees and exclusions only).
 """
 
 
