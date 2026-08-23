@@ -157,28 +157,33 @@ The architecture separates deterministic business logic from probabilistic LLM g
 ## Development Timeline & Commit History
 
 ```mermaid
-timeline
-    title Aster & Row Support Agent Development Timeline
+gantt
+    title Aster & Row Development Timeline
+    dateFormat YYYY-MM-DD HH:mm
+    axisFormat %b %d, %H:%M
+
     section Day 1: Aug 22, 2026
-        18:31 : cd7fb59 Project initialization & modular architecture
-        19:12 : 91dee67 Knowledge ingestion & hybrid BGE/BM25 retrieval
-        19:33 : 260ed6d Whitelist order projection DTO & normalization
-        20:30 : f9e0392 Core orchestrator engine & prompt rules preamble
-        21:20 : 749d7ce Interactive CLI & Streamlit web UI with trace scrubbing
+    cd7fb59 Project Init & Modular Setup        :done, 2026-08-22 18:31, 2026-08-22 19:12
+    91dee67 KB Ingestion & Hybrid BGE/BM25      :done, 2026-08-22 19:12, 2026-08-22 19:33
+    260ed6d Whitelist Order DTO & Normalization :done, 2026-08-22 19:33, 2026-08-22 20:30
+    f9e0392 Core Orchestrator & 12 Rules        :done, 2026-08-22 20:30, 2026-08-22 21:20
+    749d7ce CLI & Streamlit Web Chat            :done, 2026-08-22 21:20, 2026-08-22 21:40
+
     section Overnight Pause
-        21:20 to 12:11 : Quota Exhaustion (RPD Hit) — Development paused overnight
+    Quota Limit Hit (RPD Pause ~15h)           :crit, 2026-08-22 21:40, 2026-08-23 12:11
+
     section Day 2: Aug 23, 2026
-        12:41 : 8a60e3a Authored 10 original boundary test cases
-        13:55 : fb7ee1c Fix Bug 1 (Sibling chunk boost for return window)
-        15:07 : bf7a0f5 Automated 25-case evaluation runner & reporting
-        15:35 : ec840ab Fix Bugs 2 & 3 (Order handoff & TrailPlus retrieval)
-        16:32 : d7a67ef Dedicated model manager & stricter intent routing
-        16:43 : 7a4b9e4 Model manager CLI feedback & formatting
-        18:09 : cc8e17d 4-Tier model failover pool (3.7 -> 3.6 -> 3.5 -> 3.5-lite)
-        18:48 : 3082e14 PII inquiry handoff & category warranty logic
-        19:38 : 1b5ce16 Fix Bugs 4-7 (Non-echo prompt rules & boundaries)
-        20:27 : dcb74cf Comprehensive bug diary documentation
-        20:42 : 8f76529 Modern Web UI overhaul & debug trace inspector
+    8a60e3a 10 Original Boundary Cases         :done, 2026-08-23 12:41, 2026-08-23 13:55
+    fb7ee1c Fix Bug 1: Sibling Boost for Returns:done, 2026-08-23 13:55, 2026-08-23 15:07
+    bf7a0f5 Automated 25-Case Eval Harness      :done, 2026-08-23 15:07, 2026-08-23 15:35
+    ec840ab Fix Bugs 2 & 3: Handoff & TrailPlus :done, 2026-08-23 15:35, 2026-08-23 16:32
+    d7a67ef Dedicated Model Manager             :done, 2026-08-23 16:32, 2026-08-23 16:43
+    7a4b9e4 Model Manager CLI Feedback          :done, 2026-08-23 16:43, 2026-08-23 18:09
+    cc8e17d 4-Tier Model Failover (3.7 -> 3.5l) :done, 2026-08-23 18:09, 2026-08-23 18:48
+    3082e14 PII Inquiry Handoff & Warranty Rules:done, 2026-08-23 18:48, 2026-08-23 19:38
+    1b5ce16 Fix Bugs 4-7: Non-Echo Prompt Rules :done, 2026-08-23 19:38, 2026-08-23 20:27
+    dcb74cf Bug Diary Documentation             :done, 2026-08-23 20:27, 2026-08-23 20:42
+    8f76529 Modern Web UI Overhaul & Inspector  :done, 2026-08-23 20:42, 2026-08-23 21:00
 ```
 
 <details>
