@@ -46,31 +46,6 @@ The Aster & Row AI Support Agent is a deterministic reliability layer built arou
 
 The architecture separates deterministic business logic from probabilistic LLM generation. Instead of letting an LLM decide tool execution or policy precedence, the system resolves routing, precedence, privacy filtering, and conflict detection in Python code before synthesizing the prompt.
 
-```text
-User Message ──► [Deterministic Pre-Router]
-                        │
-       ┌────────────────┴────────────────┐
-       ▼                                 ▼
-[Knowledge Path]                   [Order Path]
- 1. Hybrid Search (BGE + BM25)      1. Normalize ID (ORD-XXXX)
- 2. RRF Rank Fusion (k=60)          2. Lookup data/orders.json
- 3. Precedence Filtering (Active)   3. Whitelist Projection (Safe DTO)
- 4. Conflict Detection (Topics)     4. Stale-ETA Suppression
-       │                                 │
-       └────────────────┬────────────────┘
-                        ▼
-             [Evidence Pack Assembly]
-             (Untrusted Reference Data)
-                        ▼
-             [LLM Synthesis & Rules]
-             (12 Strict Operational Rules)
-                        ▼
-             [Post-Response Validator]
-             (PII Redaction & Action Scrubbing)
-                        ▼
-                 [AgentResponse]
-```
-
 #### 1. Deterministic Pre-Router (`app/agent/router.py`)
 - **Zero-LLM Dispatch**: Uses compiled regex patterns and session history rather than an LLM prompt to classify incoming queries.
 - **Priority Routing**:
@@ -174,87 +149,36 @@ User Message ──► [Deterministic Pre-Router]
 | **Pre-Routing Strategy** | Deterministic Regex & Session History Parser | LLM Intent Classifier, Multi-Agent Subagent Routing | An LLM-based router adds 300–800ms of latency per turn, doubles API token consumption, risks classification hallucinations on borderline queries, and consumes precious free-tier quota. Regular expressions combined with conversation state are 100% deterministic, instantaneous (<1ms), and zero-cost. |
 | **Order Data Privacy** | Whitelist DTO Projection (`SafeOrderResult`) | Blacklist Key Stripping, In-Prompt System Instructions | In-prompt instructions ("never reveal email") frequently fail against indirect jailbreaks and prompt leakage. Blacklists fail when new sensitive fields are added upstream. Explicit whitelist construction guarantees that sensitive fields (`customer_email`, `risk_score`, `warehouse_note`) are physically omitted before the payload ever reaches the prompt builder. |
 | **Document Precedence** | Deterministic Frontmatter Metadata Filtering | Pure LLM In-Context Disambiguation | Providing both active and legacy documents in the prompt and asking the LLM to choose the active one leads to stochastic failures. LLMs are easily confused by lexical overlap across versions. Deterministic filtering in Python guarantees superseded policies (`02-returns-policy-legacy.md`) and internal drafts are never treated as authoritative. |
-| **API Quota Management** | Dynamic Model Rotation Pool | Exponential Backoff with Single Model | Gemini free-tier endpoints impose strict RPD (Requests Per Day) and RPM (Requests Per Minute) limits. An exponential backoff on a single model tier eventually exhausts daily quota during the 25-case evaluation suite. A rotating pool seamlessly distributes request volume and eliminates 429 quota failures. |
+| **API Quota Management** | Dynamic 4-Tier Model Rotation Pool (`gemini-3.7-flash` -> `3.6-flash` -> `3.5-flash` -> `3.5-flash-lite`) | Exponential Backoff with Single Model | Gemini free-tier endpoints impose strict RPD (Requests Per Day) and RPM (Requests Per Minute) limits. An exponential backoff on a single model tier eventually exhausts daily quota during the 25-case evaluation suite. A rotating pool (`gemini-3.7-flash` as primary, gracefully falling back across tiers) seamlessly distributes request volume and eliminates 429 quota failures. |
 | **Session State Storage** | In-Memory Scoped Store (`SessionStore`) | Persistent Database (SQLite / Postgres / Redis) | In-memory storage aligns directly with the assignment's explicit guideline to build the smallest reliable system without excess infrastructure. It provides thread-safe multi-session isolation with sub-millisecond turn updates and zero external dependencies. |
 
 ---
 
 ## Development Timeline & Commit History
 
-```text
-===================================================================================================
-                                      DEVELOPMENT TIMELINE
-===================================================================================================
-
-[PHASE 1: ARCHITECTURE & INTERFACES] ──────────────────────── (Aug 22, 18:31 -> 21:20 +0530)
-  |-- cd7fb59 (18:31) : Project Initialization & Modular Directory Architecture
-  |-- 91dee67 (19:12) : KB Parser, BGE/BM25 Hybrid Indexing & Conflict Extraction
-  |-- 260ed6d (19:33) : Secure Whitelist Order Tool & SafeOrderResult DTO
-  |-- f9e0392 (20:30) : Core Orchestrator Engine & System Prompt Preamble
-  \-- 749d7ce (21:20) : Interactive CLI & Streamlit Web UI with Scrubbed Traces
-         |
-         v
-[OVERNIGHT RATE-LIMIT PAUSE] ──────────────────────────────── (Duration: ~15 Hours)
-  |-- At 21:20, Gemini Free-Tier Daily Quota (RPD) was exhausted on initial model key.
-  |-- Development paused overnight while quota reset was pending.
-  \-- Resumed next day at ~12:11 (30 mins before first commit) with failover pool design.
-         |
-         v
-[PHASE 2: EVALUATION, MODEL FAILOVER & BUG FIXES] ─────────── (Aug 23, 12:41 -> 20:42 +0530)
-  |-- 8a60e3a (12:41) : Authored 10 Original Cases (evaluation/original-cases.json)
-  |-- fb7ee1c (13:55) : [FIX] Bug 1 - Sibling Chunk Retrieval Boost (Return Window)
-  |-- bf7a0f5 (15:07) : Automated 25-Case Evaluation Harness & 10-Category Reporter
-  |-- ec840ab (15:35) : [FIX] Bugs 2 & 3 - Order Handoff Flags & TrailPlus Inclusion
-  |-- d7a67ef (16:32) : Model Manager & Stricter Order ID Intent Routing
-  |-- 7a4b9e4 (16:43) : Visual CLI Rotation Feedback & Code Style Standardization
-  |-- cc8e17d (18:09) : Dynamic Model Failover Pool (Permanent 429 Prevention)
-  |-- 3082e14 (18:48) : PII Inquiry Handoff Logic & Category Warranty Disclosures
-  |-- 1b5ce16 (19:38) : [FIX] Prompt Rules - Eliminated Forbidden Echoes & Fixed Boundaries
-  |-- dcb74cf (20:27) : Comprehensive Bug Diary Documentation & Regression Mappings
-  \-- 8f76529 (20:42) : Web UI Overhaul - Modern CSS, Prompt Suggestions & Telemetry
-```
-
-### Visual Workflow Diagram
-
 ```mermaid
-graph TD
-    %% Phase 1: Foundation
-    subgraph P1["PHASE 1 — Foundation & Core Systems (Aug 22)"]
-        direction TB
-        c1["<b>cd7fb59</b> (18:31)<br/>Project Init & Architecture"] --> c2["<b>91dee67</b> (19:12)<br/>KB Ingestion & Hybrid Search"]
-        c2 --> c3["<b>260ed6d</b> (19:33)<br/>Whitelist Order Tool"]
-        c3 --> c4["<b>f9e0392</b> (20:30)<br/>Agent Core & Observability"]
-        c4 --> c5["<b>749d7ce</b> (21:20)<br/>CLI & Streamlit Web UI"]
-    end
-
-    %% Overnight Pause
-    subgraph PAUSE["OVERNIGHT PAUSE (~15 Hours)"]
-        pause_node["<b>API Quota Reached (RPD Limit)</b><br/>Gemini free tier daily limit reached at 21:20.<br/>Resumed next day at ~12:11 (30 mins prior to first commit)."]
-    end
-
-    %% Phase 2: Evaluation & Reliability
-    subgraph P2["PHASE 2 — Evaluation, Failover & Hardening (Aug 23)"]
-        direction TB
-        c6["<b>8a60e3a</b> (12:41)<br/>10 Original Cases"] --> c7["<b>fb7ee1c</b> (13:55)<br/>Fix Bug 1: Sibling Boost"]
-        c7 --> c8["<b>bf7a0f5</b> (15:07)<br/>Eval Harness & Reporter"]
-        c8 --> c9["<b>ec840ab</b> (15:35)<br/>Fix Bugs 2 & 3: Handoff & KB"]
-        c9 --> c10["<b>d7a67ef / 7a4b9e4</b> (16:32-16:43)<br/>Model Manager & CLI"]
-        c10 --> c11["<b>cc8e17d</b> (18:09)<br/>Dynamic Model Failover Pool"]
-        c11 --> c12["<b>3082e14</b> (18:48)<br/>PII & Warranty Rules"]
-        c12 --> c13["<b>1b5ce16</b> (19:38)<br/>Fix Prompt Rules: Non-Echo"]
-        c13 --> c14["<b>dcb74cf</b> (20:27)<br/>Bug Diary Documentation"]
-        c14 --> c15["<b>8f76529</b> (20:42)<br/>Web UI Overhaul & Polish"]
-    end
-
-    %% Inter-phase connections
-    c5 ==> pause_node
-    pause_node ==> c6
-
-    %% Styling
-    style P1 fill:#f8fafc,stroke:#475569,stroke-width:2px,color:#0f172a
-    style PAUSE fill:#fffbeb,stroke:#b45309,stroke-width:2px,stroke-dasharray: 4 4,color:#78350f
-    style P2 fill:#f0fdf4,stroke:#15803d,stroke-width:2px,color:#14532d
-    style pause_node fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+timeline
+    title Aster & Row Agent Development Timeline
+    section Day 1: Aug 22, 2026<br/>Foundation & Core System
+        18:31 : cd7fb59 : Project Initialization & Modular Setup
+        19:12 : 91dee67 : KB Ingestion & Hybrid BGE/BM25 Search
+        19:33 : 260ed6d : Whitelist Order Tool & Safe DTO
+        20:30 : f9e0392 : Core Orchestrator & 12 Prompt Rules
+        21:20 : 749d7ce : Terminal CLI & Streamlit Web UI
+    section Overnight Pause<br/>~15 Hours
+        21:20 to 12:11 : Quota Exhaustion : Gemini free-tier daily limit (RPD) reached on initial key.<br/>Development halted overnight until quota reset and failover planned.
+    section Day 2: Aug 23, 2026<br/>Evaluation & Reliability
+        12:41 : 8a60e3a : Authored 10 Original Boundary Cases
+        13:55 : fb7ee1c : Fix Bug 1: Sibling Chunk Boost for Returns
+        15:07 : bf7a0f5 : Automated Evaluation Runner & Reporting
+        15:35 : ec840ab : Fix Bugs 2 & 3: Order Handoff & TrailPlus
+        16:32 : d7a67ef : Dedicated Model Manager & Intent Routing
+        16:43 : 7a4b9e4 : Model Manager CLI Feedback & Formatting
+        18:09 : cc8e17d : 4-Tier Model Failover (3.7 -> 3.6 -> 3.5 -> 3.5-lite)
+        18:48 : 3082e14 : PII Inquiry Handoff & Warranty Rules
+        19:38 : 1b5ce16 : Fix Bugs 4-7: Non-Echo Rules & Boundaries
+        20:27 : dcb74cf : Comprehensive Bug Diary Documentation
+        20:42 : 8f76529 : Modern Web UI Overhaul & Trace Inspector
 ```
 
 ### Commit Milestones & Impact Matrix
@@ -274,10 +198,10 @@ graph TD
 | | Aug 23, 15:35 | `ec840ab` | Bug Fix | Resolved Bugs 2 & 3: Dynamic order handoff logic and keyword-forced TrailPlus inclusion. |
 | | Aug 23, 16:32 | `d7a67ef` | Management | Added dedicated model resolution, citation format enforcement, and stricter routing. |
 | | Aug 23, 16:43 | `7a4b9e4` | Refactoring | Enhanced CLI model rotation feedback and standardized code formatting. |
-| | Aug 23, 18:09 | `cc8e17d` | Resilience | Automated dynamic model failover pool to solve free-tier quota limits. |
+| | Aug 23, 18:09 | `cc8e17d` | Resilience | Automated 4-tier model failover pool (`gemini-3.7-flash` -> `3.6` -> `3.5` -> `3.5-lite`). |
 | | Aug 23, 18:48 | `3082e14` | Policy Guardrails | Added explicit PII inquiry handoff logic and refined category warranty instructions. |
-| | Aug 23, 19:38 | `1b5ce16` | Bug Fix | Rewrote prompt rules to eliminate phrase echoes and fix temporal boundaries. |
-| | Aug 23, 20:27 | `dcb74cf` | Documentation | Documented detailed bug entries with reproduction, root causes, and regression tests. |
+| | Aug 23, 19:38 | `1b5ce16` | Bug Fix | Resolved Bugs 4-7: Rewrote prompt rules to eliminate phrase echoes and fix temporal boundaries. |
+| | Aug 23, 20:27 | `dcb74cf` | Documentation | Documented 7 detailed bug entries with reproduction, root causes, and regression tests. |
 | | Aug 23, 20:42 | `8f76529` | Polish | Modern CSS overhaul for Streamlit web app, prompt pills, and interactive trace inspector. |
 
 ---
@@ -286,7 +210,7 @@ graph TD
 
 | Layer | Technology | Details / Model | Architectural Rationale & Tradeoffs |
 |---|---|---|---|
-| **LLM Inference** | Google Gemini API (`google-genai`) | `gemini-3.5-flash` | High throughput, sub-second latency. Uses dynamic model rotation across configured models in `EVAL_MODELS` to eliminate rate-limit drops during batch evaluation. |
+| **LLM Inference** | Google Gemini API (`google-genai`) | `gemini-3.7-flash` (Primary) | High throughput, sub-second latency. Uses dynamic 4-tier model rotation (`gemini-3.7-flash` -> `gemini-3.6-flash` -> `gemini-3.5-flash` -> `gemini-3.5-flash-lite`) to eliminate rate-limit drops during batch evaluation. |
 | **Dense Embeddings** | `sentence-transformers` | `BAAI/bge-small-en-v1.5` | 384-dimensional dense vectors calculated locally on CPU/MPS; zero external API latency, zero ongoing cost, top MTEB retrieval accuracy. |
 | **Lexical Search** | `rank_bm25` | BM25Okapi | Direct term-matching for exact SKU patterns, product names, and specific fee figures where dense vector cosine distance can miss exact numbers. |
 | **Rank Fusion** | Reciprocal Rank Fusion (RRF) | $k=60$ | Non-parametric fusion combining rank positions rather than raw uncalibrated scores; robust to density scale differences. |
@@ -324,7 +248,7 @@ cp .env.example .env
 Edit `.env` to provide your API key:
 ```ini
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.5-flash
+GEMINI_MODEL=gemini-3.7-flash
 EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
 LOG_LEVEL=INFO
 EVAL_MODELS=gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite
@@ -405,6 +329,8 @@ The agent is evaluated across **25 behavior-level cases**:
 | **Bug 3** | TrailPlus Retrieval Miss | Lexical dominance of standard returns policy | Keyword-forced document inclusion + Rule 13 | `test_bug3_trailplus_retrieval.py` |
 | **Bug 4** | Forbidden Phrase Echo | Prompt rule named the forbidden phrase to forbid it | Rewrote Rule 18 in neutral descriptive language | Case assertion `price-adjustment` Turn 1 |
 | **Bug 5** | Instruction Strength Collision | Global `ONLY` clause overrode trailing general rule | Co-equal requirements in narrowed branch (Rule 14) | Case assertion `three-turn-narrowing` Turn 3 |
+| **Bug 6** | Temporal Boundary Inversion | Generic refusal conflated open vs. closed cancellation windows | Bifurcated Rule 16 into pending (<30m) vs. processing/shipped | Cases `cancellation-window-open` and `unsupported-action` |
+| **Bug 7** | Structured Date Omission | In-transit tracking skipped ETA when note lacked date | Updated Rule 9 to extract structured ETA field | Cases `valid-order-lookup` and `shipped-without-eta` |
 
 ---
 
@@ -484,6 +410,34 @@ The agent is evaluated across **25 behavior-level cases**:
 
 ---
 
+#### Bug 6: Temporal Boundary Inversion in Order Cancellation — Conflating Open vs. Closed Cancellation Windows
+
+> *Discovered beyond visible cases through boundary testing between hidden cases `cancellation-window-open-pending-order` (ORD-1001) and `unsupported-action-cancellation-multiturn` (ORD-1002).*
+
+- **Reproduction**:
+  - Query A: `"I just placed order ORD-1001 a few minutes ago and I need to cancel it right now."` (ORD-1001 placed 15 minutes prior to snapshot; status is `pending`; 30-minute window is open).
+  - Query B: `"I need to cancel my order ORD-1002 immediately."` (ORD-1002 placed 2 hours 40 minutes prior to snapshot; status is `processing`; window is closed).
+- **Actual Failure**: The agent gave a generic refusal across both cases, failing to distinguish that ORD-1001 was within the 30-minute window and still pending, while ORD-1002 was past the window and processing.
+- **Root Cause**: A monolithic cancellation rule collapsed two distinct policy branches under `08-order-changes-and-cancellations.md`: pending orders within 30 minutes require immediate human routing for cancellation, whereas orders in processing/shipped status cannot be cancelled and require post-delivery return guidance.
+- **Fix**: Bifurcated Rule 16 in `app/agent/prompts.py` to evaluate the order's status and timestamp:
+  - If `status == 'pending'` within 30 minutes: acknowledge the pending status, explain that cancellation may still be possible within the 30-minute window, state the agent cannot execute it directly, and advise immediate human contact.
+  - If `status in ['processing', 'shipped']`: explain that the order is no longer pending and the cancellation window has passed, and provide standard return instructions.
+- **Regression Test**: Evaluation cases `cancellation-window-open-pending-order` and `unsupported-action-cancellation-multiturn`.
+
+---
+
+#### Bug 7: In-Transit Shipment Tracking Omits Estimated Delivery Date When Safe Note Lacks Redundant Date
+
+> *Discovered beyond visible cases during edge-case manual verification with messy spacing inputs (`hey can you check on   ord-1003   for me`).*
+
+- **Reproduction**: Send: `"hey can you check on   ord-1003   for me"` (`ORD-1003` has status `shipped`, carrier `USPS`, `estimated_delivery: "2026-08-18"`, and customer note `"The order is in transit with USPS."`).
+- **Actual Failure**: The agent normalized `ord-1003` to `ORD-1003` and identified the package was in transit with USPS, but omitted the estimated delivery date ("August 18, 2026").
+- **Root Cause**: In `orders.json`, some orders had the date duplicated in the note text while others only had it in the structured `estimated_delivery` field. Rule 9 previously only instructed mentioning status and carrier name, leading the model to ignore the structured date line unless repeated in the note.
+- **Fix**: Updated Rule 9 in `app/agent/prompts.py` to explicitly require extracting and naturalizing the structured `Estimated delivery` field into plain English whenever present in the tool result.
+- **Regression Test**: Evaluation cases `valid-order-lookup` and `shipped-without-eta`.
+
+---
+
 ## Observability & Debug Mode
 
 The agent implements structured telemetry across the entire query lifecycle. Every turn produces an ordered sequence of events capturing intermediate states without leaking secrets or customer PII.
@@ -539,7 +493,7 @@ The toolchain was applied across specific development workflows:
    - Synthesized the 10 original evaluation test cases (`evaluation/original-cases.json`) to probe unhandled boundary states (e.g., 3-turn policy narrowing, carrier exception states, boundary cancellation windows, unverified membership claims).
 
 3. **Multi-Model Evaluation & Rotation**:
-   - Configured dynamic fallback across configured Gemini models in the evaluation harness (`evaluation_runner/run_eval.py`), automating rate-limit recovery and batch pause timing.
+   - Configured dynamic fallback across configured Gemini models (`gemini-3.7-flash` -> `gemini-3.6-flash` -> `gemini-3.5-flash` -> `gemini-3.5-flash-lite`) in the evaluation harness (`evaluation_runner/run_eval.py`), automating rate-limit recovery and batch pause timing.
 
 ---
 
