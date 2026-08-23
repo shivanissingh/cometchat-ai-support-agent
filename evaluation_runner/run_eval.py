@@ -75,9 +75,7 @@ _DEFAULT_EVAL_MODELS = [
     "gemini-3.7-flash",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
-    "gemini-2.5-flash",
     "gemini-3.5-flash-lite",
-    "gemini-2.5-flash-lite",
 ]
 
 
@@ -279,8 +277,14 @@ def _grade_concepts(
                 code in exc_str
                 for code in ("429", "ResourceExhausted", "RESOURCE_EXHAUSTED", "quota")
             )
+            is_not_found = any(
+                term in exc_str for term in ("404", "NOT_FOUND", "NotFound", "no longer available")
+            )
             if is_quota:
                 GLOBAL_MODEL_MANAGER.mark_exhausted(grading_model, reason="429 in concept grading")
+                continue
+            elif is_not_found:
+                GLOBAL_MODEL_MANAGER.mark_exhausted(grading_model, reason="404 Model Not Found")
                 continue
             elif "503" in exc_str or "UNAVAILABLE" in exc_str or "demand" in exc_str.lower():
                 time.sleep(2)
@@ -618,16 +622,7 @@ def _run_schema_a_case(
 ) -> report.CaseResult:
     """Run all turns; assert only on the FINAL turn's response (Schema A)."""
     response = None
-    for i, msg in enumerate(messages):
-        if i > 0:
-            _logger.info(
-                "  [%s] sleeping %ds before turn %d/%d",
-                case_id,
-                RATE_LIMIT_SLEEP_SECONDS,
-                i + 1,
-                len(messages),
-            )
-            time.sleep(RATE_LIMIT_SLEEP_SECONDS)
+    for msg in messages:
         response = agent.handle_message(session_id=session_id, text=msg["content"])
 
     if response is None:
@@ -679,16 +674,6 @@ def _run_schema_b_case(
     all_failures: list[str] = []
 
     for i, msg in enumerate(messages):
-        if i > 0:
-            _logger.info(
-                "  [%s] sleeping %ds before turn %d/%d (Schema B)",
-                case_id,
-                RATE_LIMIT_SLEEP_SECONDS,
-                i + 1,
-                len(messages),
-            )
-            time.sleep(RATE_LIMIT_SLEEP_SECONDS)
-
         response = agent.handle_message(session_id=session_id, text=msg["content"])
         turn_key = f"turn_{i + 1}"
 
@@ -826,7 +811,7 @@ def main() -> None:
     print(f"  {_BOLD}Total Test Cases:{_RESET} {total} (15 visible + 10 original)")
     print(f"  {_BOLD}Model Pool:{_RESET}       {', '.join(GLOBAL_MODEL_MANAGER.models)}")
     print(
-        f"  {_BOLD}Rate Limiting:{_RESET}    Strict <= 3 RPM | Daily Caps: 18 (Flash) / 490 (Lite)"
+        f"  {_BOLD}Rate Pacing:{_RESET}      Strict 15s gap | Daily Caps: 18 (Flash) / 490 (Lite)"
     )
     print(f"  {_BOLD}Detailed Logs:{_RESET}    logs/evaluation.log\n")
 

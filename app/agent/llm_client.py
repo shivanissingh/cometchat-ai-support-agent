@@ -103,56 +103,12 @@ def _get_client() -> genai.Client:
     return _client
 
 
-def _run_probe(client: genai.Client, model: str) -> bool:
-    """Send a minimal test request; return True if model supports function calling."""
-    try:
-        response = client.models.generate_content(
-            model=model,
-            contents="Say 'ok'.",
-            config=genai_types.GenerateContentConfig(
-                tools=[_PROBE_TOOL],
-                temperature=0,
-            ),
-        )
-        # Any non-exception response counts as a pass — the model responded.
-        _ = response.text  # access text to trigger any lazy errors
-        return True
-    except Exception as exc:  # noqa: BLE001
-        _logger.warning(
-            "Capability probe failed",
-            extra={
-                "probe_model": model,
-                "error_type": type(exc).__name__,
-                "error": str(exc)[:200],
-            },
-        )
-        return False
-
-
 def _resolve_model() -> str:
-    """Run the capability probe (once) and return the resolved model name."""
+    """Return the configured model name."""
     global _resolved_model  # noqa: PLW0603
     if _resolved_model is not None:
         return _resolved_model
-
-    configured = config.GEMINI_MODEL
-    client = _get_client()
-
-    _logger.info(
-        "Running capability probe",
-        extra={"probe_model": configured, "api_key_present": bool(config.GEMINI_API_KEY)},
-    )
-
-    if _run_probe(client, configured):
-        _resolved_model = configured
-        _logger.info("Capability probe passed", extra={"resolved_model": _resolved_model})
-    else:
-        _resolved_model = FALLBACK_MODEL
-        _logger.warning(
-            "Capability probe failed — falling back",
-            extra={"configured_model": configured, "fallback_model": _resolved_model},
-        )
-
+    _resolved_model = config.GEMINI_MODEL or FALLBACK_MODEL
     return _resolved_model
 
 
@@ -162,11 +118,7 @@ def _resolve_model() -> str:
 
 
 def ensure_model_ready() -> str:
-    """Run the capability probe if not yet done; return the resolved model name.
-
-    Useful for pre-warming at startup rather than waiting for the first
-    ``call_llm`` invocation.
-    """
+    """Return the resolved model name."""
     return _resolve_model()
 
 
@@ -198,17 +150,11 @@ def call_llm(
     -------
     tuple[str, dict | None]
         (response_text, function_call_args_or_None)
-        ``function_call_args`` is a dict like ``{"order_id": "ORD-1001"}``
-        when the model emits a ``lookup_order`` function call; otherwise None.
     """
-    model = _resolve_model()
     client = _get_client()
 
-    # Build the contents list for the Gemini API.
     contents: list[genai_types.Content] = []
-
-    # Inject prior history turns (user / model alternating).
-    for turn in history:
+    for turn in history[:-1]:
         role = turn.get("role", "user")
         text = turn.get("content", "")
         contents.append(
@@ -218,12 +164,15 @@ def call_llm(
             )
         )
 
-    # Append the evidence pack to the last user content if history is non-empty,
-    # otherwise create a standalone user content with just the evidence pack.
-    if contents and contents[-1].role == "user":
-        last_parts = list(contents[-1].parts or [])
-        last_parts.append(genai_types.Part(text=f"\n\n{evidence_pack}"))
-        contents[-1] = genai_types.Content(role="user", parts=last_parts)
+    if history:
+        last_user_text = history[-1].get("content", "")
+        last_turn_content = f"{last_user_text}\n\n{evidence_pack}"
+        contents.append(
+            genai_types.Content(
+                role="user",
+                parts=[genai_types.Part(text=last_turn_content)],
+            )
+        )
     else:
         contents.append(
             genai_types.Content(
@@ -241,8 +190,6 @@ def call_llm(
         temperature=0.2,
         tools=tools if tools else None,
     )
-
-    import time
 
     max_model_attempts = len(GLOBAL_MODEL_MANAGER.models) * 2
     response = None
@@ -275,6 +222,13 @@ def call_llm(
                 code in exc_str
                 for code in ("429", "ResourceExhausted", "RESOURCE_EXHAUSTED", "quota")
             )
+            is_not_found = any(
+                term in exc_str for term in ("404", "NOT_FOUND", "NotFound", "no longer available")
+            )
+            is_unavailable = (
+                "503" in exc_str or "UNAVAILABLE" in exc_str or "demand" in exc_str.lower()
+            )
+
             if is_quota:
                 _logger.warning(
                     "Quota / rate-limit hit on model %s; switching to next model in pool",
@@ -283,12 +237,21 @@ def call_llm(
                 )
                 GLOBAL_MODEL_MANAGER.mark_exhausted(model, reason="429 ResourceExhausted")
                 continue
-            elif "503" in exc_str or "UNAVAILABLE" in exc_str or "demand" in exc_str.lower():
+            elif is_not_found:
                 _logger.warning(
-                    "Transient 503 on model %s; switching to next model",
+                    "Model %s not found / deprecated; switching to next model in pool",
                     model,
+                    extra={"error": exc_str[:200]},
                 )
-                time.sleep(2)
+                GLOBAL_MODEL_MANAGER.mark_exhausted(model, reason="404 Model Not Found")
+                continue
+            elif is_unavailable:
+                _logger.warning(
+                    "Model %s unavailable (503); switching to next model in pool",
+                    model,
+                    extra={"error": exc_str[:200]},
+                )
+                GLOBAL_MODEL_MANAGER.mark_exhausted(model, reason="503 Service Unavailable")
                 continue
             else:
                 raise

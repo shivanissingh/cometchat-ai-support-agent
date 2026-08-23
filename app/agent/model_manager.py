@@ -18,8 +18,7 @@ import logging
 import os
 import sys
 import time
-from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 _logger = logging.getLogger(__name__)
 
@@ -32,22 +31,18 @@ _CYAN = "[96m"
 _BOLD = "[1m"
 _RESET = "[0m"
 
-# The 6 canonical model options in preference order
+# Canonical model options in preference order
 DEFAULT_MODELS: list[str] = [
     "gemini-3.7-flash",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
-    "gemini-2.5-flash",
     "gemini-3.5-flash-lite",
-    "gemini-2.5-flash-lite",
 ]
 
 # Safety limits
-MAX_RPM: int = 3  # Strict RPM cap: maximum 3 calls per minute
-MIN_CALL_GAP_SECONDS: float = 20.0  # Proper time gap between consecutive calls (60s / 3 = 20s)
+FIXED_CALL_GAP_SECONDS: float = 15.0
 FLASH_RPD_CAP: int = 18  # Flash models daily cap (max 18 calls/day)
 LITE_RPD_CAP: int = 490  # Lite models daily cap (max 490 calls/day)
-WINDOW_SECONDS: float = 60.0
 
 
 def get_rpd_cap(model: str) -> int:
@@ -61,52 +56,19 @@ def get_rpd_cap(model: str) -> int:
 class ModelStats:
     model: str
     daily_count: int = 0
-    call_timestamps: deque[float] = field(default_factory=deque)
     quota_exhausted: bool = False
 
     @property
     def rpd_cap(self) -> int:
         return get_rpd_cap(self.model)
 
-    def prune_window(self, now: float) -> None:
-        """Remove timestamps older than WINDOW_SECONDS."""
-        while self.call_timestamps and (now - self.call_timestamps[0] >= WINDOW_SECONDS):
-            self.call_timestamps.popleft()
-
-    @property
-    def rpm_count(self) -> int:
-        now = time.time()
-        self.prune_window(now)
-        return len(self.call_timestamps)
-
     def is_rpd_available(self) -> bool:
         """True if model has not exhausted its daily limit cap."""
         return not self.quota_exhausted and self.daily_count < self.rpd_cap
 
-    def calculate_rpm_wait(self, now: float) -> float:
-        """Calculate required sleep time to strictly enforce RPM <= 3 and proper time gaps."""
-        self.prune_window(now)
-        wait = 0.0
-
-        # Gap check: ensure at least MIN_CALL_GAP_SECONDS since the previous call
-        if self.call_timestamps:
-            last_call = self.call_timestamps[-1]
-            gap_needed = (last_call + MIN_CALL_GAP_SECONDS) - now
-            if gap_needed > wait:
-                wait = gap_needed
-
-        # Sliding window check: ensure < MAX_RPM calls in the last 60s
-        if len(self.call_timestamps) >= MAX_RPM:
-            oldest = self.call_timestamps[0]
-            window_needed = (oldest + WINDOW_SECONDS) - now + 0.5
-            if window_needed > wait:
-                wait = window_needed
-
-        return max(0.0, wait)
-
 
 class ModelManager:
-    """Thread-safe manager enforcing RPM timer spacing and RPD-only model switching."""
+    """Manager enforcing strict 15s inter-request pacing and RPD model switching."""
 
     def __init__(self, models: list[str] | None = None) -> None:
         raw_env = os.getenv("EVAL_MODELS", "")
@@ -120,9 +82,10 @@ class ModelManager:
 
         self.stats: dict[str, ModelStats] = {m: ModelStats(model=m) for m in self.models}
         self._current_index: int = 0
+        self._last_call_time: float = 0.0
 
     def mark_exhausted(self, model: str, reason: str = "429 Quota Exhausted") -> None:
-        """Mark a model as having exhausted its daily quota and advance to next model."""
+        """Mark a model as having exhausted its quota and advance to next model."""
         if model in self.stats:
             self.stats[model].quota_exhausted = True
             self._print_rotation_event(
@@ -144,8 +107,7 @@ class ModelManager:
         calls = self.stats[new_model].daily_count
         quota_str = f"{calls}/{cap} calls"
         act_line = (
-            f"║    Active: {_GREEN}{_BOLD}{new_model:<16}{_RESET}"
-            f"{_YELLOW} Quota: {quota_str:<19}║"
+            f"║    Active: {_GREEN}{_BOLD}{new_model:<16}{_RESET}{_YELLOW} Quota: {quota_str:<19}║"
         )
         print(f"{_YELLOW}{act_line}{_RESET}", flush=True)
         print(f"{_YELLOW}╚{b}╝{_RESET}\n", flush=True)
@@ -181,10 +143,7 @@ class ModelManager:
         return f"{model} (Calls: {st.daily_count}/{st.rpd_cap})"
 
     def acquire_call_slot(self) -> str:
-        """Select the active model and sleep the required gap to strictly enforce RPM <= 3.
-
-        Model is NOT switched for RPM. It only sleeps the exact required timer gap.
-        """
+        """Sleep fixed 15s since last call and return active model."""
         model = self.get_current_model()
         st = self.stats[model]
 
@@ -193,28 +152,25 @@ class ModelManager:
             self._advance_to_next_available()
             model = self.get_current_model()
             self._print_rotation_event(old_model=old, reason=f"Daily Cap ({st.rpd_cap}) Reached")
-            st = self.stats[model]
 
         now = time.time()
-        wait = st.calculate_rpm_wait(now)
-
-        if wait > 0:
-            msg = f"  {_CYAN}⏱ [Rate Pacing] Waiting {wait:.1f}s (<= 3 RPM) on {model}...{_RESET}\n"
+        elapsed = now - self._last_call_time
+        if self._last_call_time > 0 and elapsed < FIXED_CALL_GAP_SECONDS:
+            wait = FIXED_CALL_GAP_SECONDS - elapsed
+            msg = f"  {_CYAN}⏱ [Rate Pacing] Waiting {wait:.1f}s (15s gap) on {model}...{_RESET}\n"
             sys.stdout.write(msg)
             sys.stdout.flush()
             time.sleep(wait)
 
+        self._last_call_time = time.time()
         return model
 
     def record_call(self, model: str) -> None:
-        """Record an initiated call timestamp and increment daily count for the model."""
+        """Record an initiated call and increment daily count for the model."""
         if model not in self.stats:
             self.stats[model] = ModelStats(model=model)
-        now = time.time()
         st = self.stats[model]
         st.daily_count += 1
-        st.call_timestamps.append(now)
-        st.prune_window(now)
 
         _logger.info(
             "Model call recorded",
@@ -222,8 +178,6 @@ class ModelManager:
                 "model": model,
                 "daily_calls": st.daily_count,
                 "daily_cap": st.rpd_cap,
-                "rpm_in_window": len(st.call_timestamps),
-                "rpm_cap": MAX_RPM,
             },
         )
 

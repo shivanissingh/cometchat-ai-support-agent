@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 load_dotenv()  # reads .env in the current working directory (or any parent)
 
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
 EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
 LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 

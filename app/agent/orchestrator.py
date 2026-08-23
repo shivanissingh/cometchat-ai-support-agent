@@ -108,6 +108,18 @@ _KEYWORD_FORCED_DOCS: list[tuple[list[str], str]] = [
     ),
     (
         [
+            "return",
+            "returns",
+            "refund",
+            "exchange",
+            "backpack",
+            "bag",
+            "return window",
+        ],
+        "01-returns-policy-current.md",
+    ),
+    (
+        [
             "canada",
             "international",
             "customs",
@@ -426,36 +438,14 @@ class Agent:
         established_order_id = result.order_id if result.found else order_id
         self._save_turn(session_id, text, answer, order_id=established_order_id, topic=None)
 
-        # Determine handoff signal based on order state, LLM response, and sensitive actions.
-        is_sensitive_request = any(
-            kw in text.lower()
-            for kw in [
-                "email",
-                "address",
-                "internal note",
-                "risk score",
-                "cancel",
-                "cancellation",
-                "refund",
-            ]
-        )
-        is_escalation = any(
-            p in answer.lower()
-            for p in [
-                "human support specialist",
-                "human specialist",
-                "connect you with a human",
-                "connect you to a human",
-                "human agent",
-                "human representative",
-                "transfer you to",
-            ]
+        # Determine handoff signal based on order state and explicit action requests.
+        is_cancellation_action = any(
+            kw in text.lower() for kw in ["cancel", "cancellation", "modify order", "change order"]
         )
         handoff = (
             not result.found
             or result.status == "exception"
-            or is_sensitive_request
-            or is_escalation
+            or is_cancellation_action
         )
 
         citations: list[dict[str, str]] = []
@@ -621,13 +611,19 @@ class Agent:
         )
 
         # --- LLM call ----------------------------------------------------
+        # Only include the order tool in the knowledge path if the current message
+        # actually contains an order ID token that might need fallback lookup.
+        import re
+
+        has_order_id_in_query = bool(re.search(r"\bORD-\d{4}\b", text, re.IGNORECASE))
+
         tracer.emit(
             "llm_call",
             {
                 "path": "knowledge",
                 "auth_chunk_count": len(relevant_auth),
                 "conflict": conflict.has_conflict,
-                "include_order_tool": True,
+                "include_order_tool": has_order_id_in_query,
             },
         )
 
@@ -635,7 +631,7 @@ class Agent:
             rules=APP_RULES_TEXT,
             history=history,
             evidence_pack=evidence,
-            include_order_tool=True,
+            include_order_tool=has_order_id_in_query,
         )
 
         # --- Fallback: LLM emitted a lookup_order function call ----------
@@ -700,13 +696,10 @@ class Agent:
             or any(
                 p in answer.lower()
                 for p in [
-                    "connect you with a human",
-                    "connect you to a human",
-                    "connect you with our support team",
-                    "connect you to our support team",
-                    "human review before approval",
                     "transfer you to",
                     "transferring you to",
+                    "connect you with a live agent",
+                    "connect you to a live agent",
                 ]
             )
         )
