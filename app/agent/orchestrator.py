@@ -438,7 +438,21 @@ class Agent:
         established_order_id = result.order_id if result.found else order_id
         self._save_turn(session_id, text, answer, order_id=established_order_id, topic=None)
 
-        # Determine handoff signal based on order state and explicit action requests.
+        # Determine handoff signal based on order state, cancellation actions, and PII inquiries.
+        is_privacy_request = any(
+            kw in text.lower()
+            for kw in [
+                "email",
+                "address",
+                "internal note",
+                "internal_note",
+                "risk score",
+                "risk_score",
+                "warehouse note",
+                "warehouse_note",
+                "support tags",
+            ]
+        )
         is_cancellation_action = any(
             kw in text.lower() for kw in ["cancel", "cancellation", "modify order", "change order"]
         )
@@ -446,6 +460,7 @@ class Agent:
             not result.found
             or result.status == "exception"
             or is_cancellation_action
+            or is_privacy_request
         )
 
         citations: list[dict[str, str]] = []

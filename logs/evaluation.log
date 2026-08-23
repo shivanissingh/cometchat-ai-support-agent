@@ -1,436 +1,436 @@
-2026-08-23 17:51:59,285 - eval - INFO - Loaded 15 cases from visible-cases.json
-2026-08-23 17:51:59,286 - eval - INFO - Loaded 10 cases from original-cases.json
-2026-08-23 17:51:59,286 - eval - INFO - Total cases: 25
-2026-08-23 17:51:59,286 - app.agent.orchestrator - INFO - Building knowledge-base indexes…
-2026-08-23 17:51:59,303 - sentence_transformers.base.model - INFO - No device provided, using mps
-2026-08-23 17:51:59,651 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:51:59,653 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-2026-08-23 17:51:59,683 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
-2026-08-23 17:51:59,937 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:51:59,965 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
-2026-08-23 17:51:59,967 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from BAAI/bge-small-en-v1.5.
-2026-08-23 17:52:00,206 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:00,249 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:00,479 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:00,513 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md "HTTP/1.1 200 OK"
-2026-08-23 17:52:00,745 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:00,783 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:01,038 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:01,077 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/sentence_bert_config.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:01,330 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:01,571 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:01,603 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:02,006 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:02,243 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:02,475 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:02,712 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:02,950 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:02,985 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:03,225 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:03,268 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:03,500 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:03,533 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:03,773 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:03,805 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:04,046 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:04,322 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
-2026-08-23 17:52:04,730 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
-2026-08-23 17:52:04,763 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
-2026-08-23 17:52:04,992 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/2_Normalize/config.json "HTTP/1.1 404 Not Found"
-2026-08-23 17:52:05,346 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5 "HTTP/1.1 200 OK"
-2026-08-23 17:52:05,886 - app.agent.orchestrator - INFO - Knowledge-base indexes ready
-2026-08-23 17:52:05,887 - observability - INFO - trace
-2026-08-23 17:52:05,887 - observability - INFO - trace
-2026-08-23 17:52:05,913 - observability - INFO - trace
-2026-08-23 17:52:05,913 - observability - INFO - trace
-2026-08-23 17:52:05,913 - observability - INFO - trace
-2026-08-23 17:52:05,913 - observability - INFO - trace
-2026-08-23 17:52:05,964 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:52:05,964 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:52:05,964 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:52:05,964 - google_genai.models - WARNING - Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
-2026-08-23 17:52:13,332 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent "HTTP/1.1 503 Service Unavailable"
-2026-08-23 17:52:13,334 - app.agent.llm_client - WARNING - Model gemini-3.7-flash unavailable (503); switching to next model in pool
-2026-08-23 17:52:20,969 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:52:20,970 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:52:20,970 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:52:21,526 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent "HTTP/1.1 429 Too Many Requests"
-2026-08-23 17:52:21,528 - app.agent.llm_client - WARNING - Quota / rate-limit hit on model gemini-3.6-flash; switching to next model in pool
-2026-08-23 17:52:35,974 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:52:35,975 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:52:35,975 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:52:36,577 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent "HTTP/1.1 429 Too Many Requests"
-2026-08-23 17:52:36,579 - app.agent.llm_client - WARNING - Quota / rate-limit hit on model gemini-3.5-flash; switching to next model in pool
-2026-08-23 17:52:50,979 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:52:50,980 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:52:50,980 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:52:52,464 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:52:52,470 - observability - INFO - trace
-2026-08-23 17:52:52,470 - observability - INFO - trace
-2026-08-23 17:52:52,471 - observability - INFO - trace
-2026-08-23 17:52:52,528 - observability - INFO - trace
-2026-08-23 17:52:52,528 - observability - INFO - trace
-2026-08-23 17:52:52,529 - observability - INFO - trace
-2026-08-23 17:52:52,529 - observability - INFO - trace
-2026-08-23 17:53:05,984 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:53:05,985 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:53:05,985 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:53:07,204 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:53:07,208 - observability - INFO - trace
-2026-08-23 17:53:07,209 - observability - INFO - trace
-2026-08-23 17:53:07,209 - observability - INFO - trace
-2026-08-23 17:53:07,270 - observability - INFO - trace
-2026-08-23 17:53:07,270 - observability - INFO - trace
-2026-08-23 17:53:07,270 - observability - INFO - trace
-2026-08-23 17:53:07,270 - observability - INFO - trace
-2026-08-23 17:53:20,989 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:53:20,990 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:53:20,990 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:53:22,846 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:53:22,850 - observability - INFO - trace
-2026-08-23 17:53:35,994 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:53:35,995 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:53:37,097 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:53:37,104 - observability - INFO - trace
-2026-08-23 17:53:37,104 - observability - INFO - trace
-2026-08-23 17:53:37,174 - observability - INFO - trace
-2026-08-23 17:53:37,174 - observability - INFO - trace
-2026-08-23 17:53:37,174 - observability - INFO - trace
-2026-08-23 17:53:37,174 - observability - INFO - trace
-2026-08-23 17:53:50,999 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:53:51,000 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:53:51,000 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:53:52,458 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:53:52,462 - observability - INFO - trace
-2026-08-23 17:53:52,462 - observability - INFO - trace
-2026-08-23 17:53:52,462 - observability - INFO - trace
-2026-08-23 17:53:52,548 - observability - INFO - trace
-2026-08-23 17:53:52,548 - observability - INFO - trace
-2026-08-23 17:53:52,548 - observability - INFO - trace
-2026-08-23 17:53:52,548 - observability - INFO - trace
-2026-08-23 17:54:06,004 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:54:06,005 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:54:06,005 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:54:07,371 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:54:07,374 - observability - INFO - trace
-2026-08-23 17:54:21,009 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:54:21,010 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:54:22,256 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:54:22,263 - observability - INFO - trace
-2026-08-23 17:54:22,263 - observability - INFO - trace
-2026-08-23 17:54:22,321 - observability - INFO - trace
-2026-08-23 17:54:22,322 - observability - INFO - trace
-2026-08-23 17:54:22,322 - observability - INFO - trace
-2026-08-23 17:54:22,322 - observability - INFO - trace
-2026-08-23 17:54:36,015 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:54:36,015 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:54:36,015 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:54:37,184 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:54:37,187 - observability - INFO - trace
-2026-08-23 17:54:51,018 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:54:51,019 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:54:51,880 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:54:51,885 - observability - INFO - trace
-2026-08-23 17:54:51,885 - observability - INFO - trace
-2026-08-23 17:54:51,886 - observability - INFO - trace
-2026-08-23 17:54:51,886 - observability - INFO - trace
-2026-08-23 17:54:51,886 - observability - INFO - trace
-2026-08-23 17:55:06,023 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:55:06,024 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:55:06,024 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:55:07,485 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:55:07,488 - observability - INFO - trace
-2026-08-23 17:55:07,489 - observability - INFO - trace
-2026-08-23 17:55:07,489 - observability - INFO - trace
-2026-08-23 17:55:07,489 - observability - INFO - trace
-2026-08-23 17:55:07,489 - observability - INFO - trace
-2026-08-23 17:55:07,490 - observability - INFO - trace
-2026-08-23 17:55:07,490 - observability - INFO - trace
-2026-08-23 17:55:07,490 - observability - INFO - trace
-2026-08-23 17:55:07,490 - observability - INFO - trace
-2026-08-23 17:55:21,029 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:55:21,029 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:55:21,029 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:55:22,469 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:55:22,473 - observability - INFO - trace
-2026-08-23 17:55:36,034 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:55:36,034 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:55:37,010 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:55:37,018 - observability - INFO - trace
-2026-08-23 17:55:37,018 - observability - INFO - trace
-2026-08-23 17:55:37,018 - observability - INFO - trace
-2026-08-23 17:55:37,018 - observability - INFO - trace
-2026-08-23 17:55:37,018 - observability - INFO - trace
-2026-08-23 17:55:51,036 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:55:51,037 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:55:51,037 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:55:52,267 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:55:52,270 - observability - INFO - trace
-2026-08-23 17:56:06,041 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:56:06,042 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:56:07,015 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:56:07,022 - observability - INFO - trace
-2026-08-23 17:56:07,022 - observability - INFO - trace
-2026-08-23 17:56:07,022 - observability - INFO - trace
-2026-08-23 17:56:07,022 - observability - INFO - trace
-2026-08-23 17:56:07,022 - observability - INFO - trace
-2026-08-23 17:56:21,043 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:56:21,044 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:56:21,044 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:56:22,261 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:56:22,264 - observability - INFO - trace
-2026-08-23 17:56:36,048 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:56:36,049 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:56:37,170 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:56:37,177 - observability - INFO - trace
-2026-08-23 17:56:37,177 - observability - INFO - trace
-2026-08-23 17:56:37,177 - observability - INFO - trace
-2026-08-23 17:56:37,177 - observability - INFO - trace
-2026-08-23 17:56:37,177 - observability - INFO - trace
-2026-08-23 17:56:51,050 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:56:51,051 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:56:51,051 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:56:52,189 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:56:52,194 - observability - INFO - trace
-2026-08-23 17:56:52,194 - observability - INFO - trace
-2026-08-23 17:56:52,195 - observability - INFO - trace
-2026-08-23 17:56:52,273 - observability - INFO - trace
-2026-08-23 17:56:52,273 - observability - INFO - trace
-2026-08-23 17:56:52,274 - observability - INFO - trace
-2026-08-23 17:56:52,274 - observability - INFO - trace
-2026-08-23 17:57:06,055 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:57:06,056 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:57:06,056 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:57:07,737 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:57:07,739 - observability - INFO - trace
-2026-08-23 17:57:21,060 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:57:21,061 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:57:22,029 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:57:22,036 - observability - INFO - trace
-2026-08-23 17:57:22,036 - observability - INFO - trace
-2026-08-23 17:57:22,126 - observability - INFO - trace
-2026-08-23 17:57:22,126 - observability - INFO - trace
-2026-08-23 17:57:22,126 - observability - INFO - trace
-2026-08-23 17:57:22,126 - observability - INFO - trace
-2026-08-23 17:57:36,065 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:57:36,066 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:57:36,066 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:57:37,638 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:57:37,642 - observability - INFO - trace
-2026-08-23 17:57:51,070 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:57:51,071 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:57:51,956 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:57:51,963 - observability - INFO - trace
-2026-08-23 17:57:51,963 - observability - INFO - trace
-2026-08-23 17:57:52,027 - observability - INFO - trace
-2026-08-23 17:57:52,027 - observability - INFO - trace
-2026-08-23 17:57:52,027 - observability - INFO - trace
-2026-08-23 17:57:52,027 - observability - INFO - trace
-2026-08-23 17:58:06,075 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:58:06,076 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:58:06,076 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:58:07,642 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:58:07,645 - observability - INFO - trace
-2026-08-23 17:58:07,646 - app.safety.validator - WARNING - Validation warning
-2026-08-23 17:58:07,646 - observability - INFO - trace
-2026-08-23 17:58:21,080 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:58:21,081 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:58:21,958 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:58:21,964 - observability - INFO - trace
-2026-08-23 17:58:21,964 - observability - INFO - trace
-2026-08-23 17:58:22,020 - observability - INFO - trace
-2026-08-23 17:58:22,020 - observability - INFO - trace
-2026-08-23 17:58:22,020 - observability - INFO - trace
-2026-08-23 17:58:22,020 - observability - INFO - trace
-2026-08-23 17:58:36,085 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:58:36,086 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:58:36,086 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:58:37,953 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:58:37,957 - observability - INFO - trace
-2026-08-23 17:58:51,091 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:58:51,091 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:58:52,186 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:58:52,194 - observability - INFO - trace
-2026-08-23 17:58:52,194 - observability - INFO - trace
-2026-08-23 17:58:52,194 - observability - INFO - trace
-2026-08-23 17:58:52,194 - observability - INFO - trace
-2026-08-23 17:58:52,194 - observability - INFO - trace
-2026-08-23 17:59:06,096 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:59:06,096 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:59:06,096 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:59:07,649 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:59:07,652 - observability - INFO - trace
-2026-08-23 17:59:21,101 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:59:21,101 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:59:22,087 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:59:22,095 - observability - INFO - trace
-2026-08-23 17:59:22,095 - observability - INFO - trace
-2026-08-23 17:59:22,095 - observability - INFO - trace
-2026-08-23 17:59:22,095 - observability - INFO - trace
-2026-08-23 17:59:22,095 - observability - INFO - trace
-2026-08-23 17:59:36,106 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:59:36,106 - app.agent.llm_client - INFO - LLM call
-2026-08-23 17:59:36,106 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:59:37,388 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:59:37,391 - observability - INFO - trace
-2026-08-23 17:59:51,111 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 17:59:51,111 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 17:59:52,092 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 17:59:52,099 - observability - INFO - trace
-2026-08-23 17:59:52,099 - observability - INFO - trace
-2026-08-23 17:59:52,099 - observability - INFO - trace
-2026-08-23 17:59:52,099 - observability - INFO - trace
-2026-08-23 17:59:52,100 - observability - INFO - trace
-2026-08-23 18:00:06,116 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:00:06,116 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:00:06,117 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:00:07,999 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:00:08,002 - observability - INFO - trace
-2026-08-23 18:00:21,121 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:00:21,122 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:00:22,093 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:00:22,101 - observability - INFO - trace
-2026-08-23 18:00:22,101 - observability - INFO - trace
-2026-08-23 18:00:22,158 - observability - INFO - trace
-2026-08-23 18:00:22,159 - observability - INFO - trace
-2026-08-23 18:00:22,159 - observability - INFO - trace
-2026-08-23 18:00:22,159 - observability - INFO - trace
-2026-08-23 18:00:36,126 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:00:36,127 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:00:36,127 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:00:37,690 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:00:37,693 - observability - INFO - trace
-2026-08-23 18:00:37,694 - observability - INFO - trace
-2026-08-23 18:00:37,694 - observability - INFO - trace
-2026-08-23 18:00:37,751 - observability - INFO - trace
-2026-08-23 18:00:37,751 - observability - INFO - trace
-2026-08-23 18:00:37,751 - observability - INFO - trace
-2026-08-23 18:00:37,751 - observability - INFO - trace
-2026-08-23 18:00:51,131 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:00:51,132 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:00:51,132 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:00:52,611 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:00:52,615 - observability - INFO - trace
-2026-08-23 18:00:52,615 - observability - INFO - trace
-2026-08-23 18:00:52,615 - observability - INFO - trace
-2026-08-23 18:00:52,683 - observability - INFO - trace
-2026-08-23 18:00:52,683 - observability - INFO - trace
-2026-08-23 18:00:52,683 - observability - INFO - trace
-2026-08-23 18:00:52,683 - observability - INFO - trace
-2026-08-23 18:01:06,123 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:01:06,124 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:01:06,124 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:01:07,443 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:01:07,446 - observability - INFO - trace
-2026-08-23 18:01:21,121 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:01:21,121 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:01:22,489 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:01:22,496 - observability - INFO - trace
-2026-08-23 18:01:22,496 - observability - INFO - trace
-2026-08-23 18:01:22,579 - observability - INFO - trace
-2026-08-23 18:01:22,579 - observability - INFO - trace
-2026-08-23 18:01:22,579 - observability - INFO - trace
-2026-08-23 18:01:22,579 - observability - INFO - trace
-2026-08-23 18:01:36,123 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:01:36,123 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:01:36,124 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:01:37,642 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:01:37,645 - observability - INFO - trace
-2026-08-23 18:01:51,127 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:01:51,127 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:01:52,082 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:01:52,090 - observability - INFO - trace
-2026-08-23 18:01:52,090 - observability - INFO - trace
-2026-08-23 18:01:52,173 - observability - INFO - trace
-2026-08-23 18:01:52,173 - observability - INFO - trace
-2026-08-23 18:01:52,173 - observability - INFO - trace
-2026-08-23 18:01:52,173 - observability - INFO - trace
-2026-08-23 18:02:06,131 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:02:06,132 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:02:06,132 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:02:07,745 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:02:07,748 - observability - INFO - trace
-2026-08-23 18:02:07,748 - app.safety.validator - WARNING - Validation warning
-2026-08-23 18:02:07,748 - observability - INFO - trace
-2026-08-23 18:02:21,136 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:02:21,137 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:02:22,008 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:02:22,015 - observability - INFO - trace
-2026-08-23 18:02:22,015 - observability - INFO - trace
-2026-08-23 18:02:22,101 - observability - INFO - trace
-2026-08-23 18:02:22,101 - observability - INFO - trace
-2026-08-23 18:02:22,101 - observability - INFO - trace
-2026-08-23 18:02:22,101 - observability - INFO - trace
-2026-08-23 18:02:36,141 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:02:36,142 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:02:36,142 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:02:37,849 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:02:37,852 - observability - INFO - trace
-2026-08-23 18:02:51,146 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:02:51,146 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:02:52,393 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:02:52,401 - observability - INFO - trace
-2026-08-23 18:02:52,401 - observability - INFO - trace
-2026-08-23 18:02:52,401 - observability - INFO - trace
-2026-08-23 18:02:52,401 - observability - INFO - trace
-2026-08-23 18:02:52,402 - observability - INFO - trace
-2026-08-23 18:03:06,151 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:03:06,152 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:03:06,152 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:03:07,448 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:03:07,451 - observability - INFO - trace
-2026-08-23 18:03:21,151 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:03:21,152 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:03:22,195 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:03:22,203 - observability - INFO - trace
-2026-08-23 18:03:22,203 - observability - INFO - trace
-2026-08-23 18:03:22,203 - observability - INFO - trace
-2026-08-23 18:03:22,203 - observability - INFO - trace
-2026-08-23 18:03:22,203 - observability - INFO - trace
-2026-08-23 18:03:36,156 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:03:36,157 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:03:36,157 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:03:37,108 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:03:37,111 - observability - INFO - trace
-2026-08-23 18:03:37,111 - observability - INFO - trace
-2026-08-23 18:03:37,111 - observability - INFO - trace
-2026-08-23 18:03:37,191 - observability - INFO - trace
-2026-08-23 18:03:37,191 - observability - INFO - trace
-2026-08-23 18:03:37,191 - observability - INFO - trace
-2026-08-23 18:03:37,191 - observability - INFO - trace
-2026-08-23 18:03:51,159 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:03:51,160 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:03:51,160 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:03:52,912 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:03:52,915 - observability - INFO - trace
-2026-08-23 18:04:06,164 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:04:06,165 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:04:07,041 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:04:07,047 - observability - INFO - trace
-2026-08-23 18:04:07,047 - observability - INFO - trace
-2026-08-23 18:04:07,130 - observability - INFO - trace
-2026-08-23 18:04:07,130 - observability - INFO - trace
-2026-08-23 18:04:07,130 - observability - INFO - trace
-2026-08-23 18:04:07,130 - observability - INFO - trace
-2026-08-23 18:04:21,169 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:04:21,170 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:04:21,170 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:04:22,917 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:04:22,920 - observability - INFO - trace
-2026-08-23 18:04:36,174 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:04:36,175 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:04:37,047 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:04:37,054 - observability - INFO - trace
-2026-08-23 18:04:37,054 - observability - INFO - trace
-2026-08-23 18:04:37,137 - observability - INFO - trace
-2026-08-23 18:04:37,137 - observability - INFO - trace
-2026-08-23 18:04:37,137 - observability - INFO - trace
-2026-08-23 18:04:37,137 - observability - INFO - trace
-2026-08-23 18:04:51,179 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:04:51,180 - app.agent.llm_client - INFO - LLM call
-2026-08-23 18:04:51,180 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:04:52,625 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-08-23 18:04:52,627 - observability - INFO - trace
-2026-08-23 18:05:06,184 - app.agent.model_manager - INFO - Model call recorded
-2026-08-23 18:05:06,185 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
-2026-08-23 18:05:07,210 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:32:59,111 - eval - INFO - Loaded 15 cases from visible-cases.json
+2026-08-23 18:32:59,111 - eval - INFO - Loaded 10 cases from original-cases.json
+2026-08-23 18:32:59,111 - eval - INFO - Total cases: 25
+2026-08-23 18:32:59,111 - app.agent.orchestrator - INFO - Building knowledge-base indexes…
+2026-08-23 18:32:59,126 - sentence_transformers.base.model - INFO - No device provided, using mps
+2026-08-23 18:32:59,496 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:32:59,498 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-08-23 18:32:59,536 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-08-23 18:32:59,775 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:32:59,817 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-08-23 18:32:59,820 - sentence_transformers.base.model - INFO - Loading SentenceTransformer model from BAAI/bge-small-en-v1.5.
+2026-08-23 18:33:00,057 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:00,101 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:00,333 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:00,373 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md "HTTP/1.1 200 OK"
+2026-08-23 18:33:00,619 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:00,663 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:00,896 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:00,944 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:01,189 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:01,428 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:01,477 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:01,886 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:02,135 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:02,381 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:02,656 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:02,888 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:02,931 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:03,169 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:03,211 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:03,455 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:03,497 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:03,748 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:03,799 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:04,049 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:04,292 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-08-23 18:33:04,573 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-23 18:33:04,613 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-08-23 18:33:04,845 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/2_Normalize/config.json "HTTP/1.1 404 Not Found"
+2026-08-23 18:33:05,116 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5 "HTTP/1.1 200 OK"
+2026-08-23 18:33:05,671 - app.agent.orchestrator - INFO - Knowledge-base indexes ready
+2026-08-23 18:33:05,672 - observability - INFO - trace
+2026-08-23 18:33:05,672 - observability - INFO - trace
+2026-08-23 18:33:05,698 - observability - INFO - trace
+2026-08-23 18:33:05,698 - observability - INFO - trace
+2026-08-23 18:33:05,698 - observability - INFO - trace
+2026-08-23 18:33:05,699 - observability - INFO - trace
+2026-08-23 18:33:05,746 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:33:05,746 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:33:05,746 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:33:05,747 - google_genai.models - WARNING - Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+2026-08-23 18:33:11,095 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-08-23 18:33:11,100 - app.agent.llm_client - WARNING - Model gemini-3.7-flash unavailable (503); switching to next model in pool
+2026-08-23 18:33:20,752 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:33:20,752 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:33:20,753 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:33:21,294 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-08-23 18:33:21,297 - app.agent.llm_client - WARNING - Quota / rate-limit hit on model gemini-3.6-flash; switching to next model in pool
+2026-08-23 18:33:35,756 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:33:35,757 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:33:35,757 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:33:36,451 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-08-23 18:33:36,453 - app.agent.llm_client - WARNING - Quota / rate-limit hit on model gemini-3.5-flash; switching to next model in pool
+2026-08-23 18:33:50,762 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:33:50,762 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:33:50,762 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:33:52,116 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:33:52,120 - observability - INFO - trace
+2026-08-23 18:33:52,121 - observability - INFO - trace
+2026-08-23 18:33:52,121 - observability - INFO - trace
+2026-08-23 18:33:52,200 - observability - INFO - trace
+2026-08-23 18:33:52,200 - observability - INFO - trace
+2026-08-23 18:33:52,201 - observability - INFO - trace
+2026-08-23 18:33:52,201 - observability - INFO - trace
+2026-08-23 18:34:05,767 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:34:05,767 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:34:05,768 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:34:07,086 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:34:07,090 - observability - INFO - trace
+2026-08-23 18:34:07,090 - observability - INFO - trace
+2026-08-23 18:34:07,090 - observability - INFO - trace
+2026-08-23 18:34:07,170 - observability - INFO - trace
+2026-08-23 18:34:07,170 - observability - INFO - trace
+2026-08-23 18:34:07,170 - observability - INFO - trace
+2026-08-23 18:34:07,170 - observability - INFO - trace
+2026-08-23 18:34:20,772 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:34:20,772 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:34:20,772 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:34:22,429 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:34:22,430 - observability - INFO - trace
+2026-08-23 18:34:35,777 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:34:35,777 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:34:36,819 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:34:36,827 - observability - INFO - trace
+2026-08-23 18:34:36,827 - observability - INFO - trace
+2026-08-23 18:34:36,904 - observability - INFO - trace
+2026-08-23 18:34:36,904 - observability - INFO - trace
+2026-08-23 18:34:36,904 - observability - INFO - trace
+2026-08-23 18:34:36,904 - observability - INFO - trace
+2026-08-23 18:34:50,782 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:34:50,782 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:34:50,783 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:34:52,537 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:34:52,540 - observability - INFO - trace
+2026-08-23 18:34:52,541 - observability - INFO - trace
+2026-08-23 18:34:52,541 - observability - INFO - trace
+2026-08-23 18:34:52,621 - observability - INFO - trace
+2026-08-23 18:34:52,621 - observability - INFO - trace
+2026-08-23 18:34:52,621 - observability - INFO - trace
+2026-08-23 18:34:52,621 - observability - INFO - trace
+2026-08-23 18:35:05,787 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:35:05,787 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:35:05,787 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:35:07,260 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:35:07,265 - observability - INFO - trace
+2026-08-23 18:35:20,792 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:35:20,792 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:35:21,720 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:35:21,728 - observability - INFO - trace
+2026-08-23 18:35:21,728 - observability - INFO - trace
+2026-08-23 18:35:21,803 - observability - INFO - trace
+2026-08-23 18:35:21,803 - observability - INFO - trace
+2026-08-23 18:35:21,803 - observability - INFO - trace
+2026-08-23 18:35:21,803 - observability - INFO - trace
+2026-08-23 18:35:35,797 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:35:35,797 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:35:35,798 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:35:37,045 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:35:37,048 - observability - INFO - trace
+2026-08-23 18:35:50,802 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:35:50,802 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:35:51,620 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:35:51,628 - observability - INFO - trace
+2026-08-23 18:35:51,628 - observability - INFO - trace
+2026-08-23 18:35:51,628 - observability - INFO - trace
+2026-08-23 18:35:51,629 - observability - INFO - trace
+2026-08-23 18:35:51,629 - observability - INFO - trace
+2026-08-23 18:36:05,807 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:36:05,807 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:36:05,808 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:36:07,065 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:36:07,068 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:07,069 - observability - INFO - trace
+2026-08-23 18:36:20,811 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:36:20,811 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:36:20,811 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:36:22,169 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:36:22,177 - observability - INFO - trace
+2026-08-23 18:36:35,816 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:36:35,816 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:36:36,676 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:36:36,683 - observability - INFO - trace
+2026-08-23 18:36:36,683 - observability - INFO - trace
+2026-08-23 18:36:36,683 - observability - INFO - trace
+2026-08-23 18:36:36,684 - observability - INFO - trace
+2026-08-23 18:36:36,684 - observability - INFO - trace
+2026-08-23 18:36:50,819 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:36:50,820 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:36:50,820 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:36:52,139 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:36:52,142 - observability - INFO - trace
+2026-08-23 18:37:05,824 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:37:05,825 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:37:06,987 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:37:06,995 - observability - INFO - trace
+2026-08-23 18:37:06,995 - observability - INFO - trace
+2026-08-23 18:37:06,995 - observability - INFO - trace
+2026-08-23 18:37:06,995 - observability - INFO - trace
+2026-08-23 18:37:06,996 - observability - INFO - trace
+2026-08-23 18:37:20,829 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:37:20,830 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:37:20,830 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:37:22,451 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:37:22,455 - observability - INFO - trace
+2026-08-23 18:37:35,835 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:37:35,835 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:37:36,841 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:37:36,849 - observability - INFO - trace
+2026-08-23 18:37:36,849 - observability - INFO - trace
+2026-08-23 18:37:36,849 - observability - INFO - trace
+2026-08-23 18:37:36,850 - observability - INFO - trace
+2026-08-23 18:37:36,850 - observability - INFO - trace
+2026-08-23 18:37:50,840 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:37:50,840 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:37:50,840 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:37:52,455 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:37:52,458 - observability - INFO - trace
+2026-08-23 18:37:52,459 - observability - INFO - trace
+2026-08-23 18:37:52,459 - observability - INFO - trace
+2026-08-23 18:37:52,518 - observability - INFO - trace
+2026-08-23 18:37:52,518 - observability - INFO - trace
+2026-08-23 18:37:52,518 - observability - INFO - trace
+2026-08-23 18:37:52,518 - observability - INFO - trace
+2026-08-23 18:38:05,845 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:38:05,845 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:38:05,845 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:38:07,507 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:38:07,512 - observability - INFO - trace
+2026-08-23 18:38:20,850 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:38:20,850 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:38:21,844 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:38:21,852 - observability - INFO - trace
+2026-08-23 18:38:21,852 - observability - INFO - trace
+2026-08-23 18:38:21,926 - observability - INFO - trace
+2026-08-23 18:38:21,926 - observability - INFO - trace
+2026-08-23 18:38:21,926 - observability - INFO - trace
+2026-08-23 18:38:21,926 - observability - INFO - trace
+2026-08-23 18:38:35,855 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:38:35,855 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:38:35,855 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:38:37,366 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:38:37,371 - observability - INFO - trace
+2026-08-23 18:38:50,860 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:38:50,860 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:38:51,949 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:38:51,956 - observability - INFO - trace
+2026-08-23 18:38:51,957 - observability - INFO - trace
+2026-08-23 18:38:52,018 - observability - INFO - trace
+2026-08-23 18:38:52,018 - observability - INFO - trace
+2026-08-23 18:38:52,018 - observability - INFO - trace
+2026-08-23 18:38:52,018 - observability - INFO - trace
+2026-08-23 18:39:05,865 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:39:05,865 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:39:05,866 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:39:07,003 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:39:07,007 - observability - INFO - trace
+2026-08-23 18:39:07,008 - app.safety.validator - WARNING - Validation warning
+2026-08-23 18:39:07,008 - observability - INFO - trace
+2026-08-23 18:39:20,870 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:39:20,870 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:39:21,763 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:39:21,768 - observability - INFO - trace
+2026-08-23 18:39:21,768 - observability - INFO - trace
+2026-08-23 18:39:21,820 - observability - INFO - trace
+2026-08-23 18:39:21,820 - observability - INFO - trace
+2026-08-23 18:39:21,820 - observability - INFO - trace
+2026-08-23 18:39:21,821 - observability - INFO - trace
+2026-08-23 18:39:35,875 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:39:35,875 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:39:35,876 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:39:37,518 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:39:37,522 - observability - INFO - trace
+2026-08-23 18:39:50,880 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:39:50,880 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:39:51,956 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:39:51,964 - observability - INFO - trace
+2026-08-23 18:39:51,964 - observability - INFO - trace
+2026-08-23 18:39:51,964 - observability - INFO - trace
+2026-08-23 18:39:51,964 - observability - INFO - trace
+2026-08-23 18:39:51,964 - observability - INFO - trace
+2026-08-23 18:40:05,885 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:40:05,885 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:40:05,886 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:40:07,162 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:40:07,168 - observability - INFO - trace
+2026-08-23 18:40:20,890 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:40:20,891 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:40:21,858 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:40:21,866 - observability - INFO - trace
+2026-08-23 18:40:21,866 - observability - INFO - trace
+2026-08-23 18:40:21,866 - observability - INFO - trace
+2026-08-23 18:40:21,866 - observability - INFO - trace
+2026-08-23 18:40:21,866 - observability - INFO - trace
+2026-08-23 18:40:35,895 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:40:35,896 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:40:35,896 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:40:37,124 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:40:37,127 - observability - INFO - trace
+2026-08-23 18:40:50,900 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:40:50,901 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:40:51,859 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:40:51,867 - observability - INFO - trace
+2026-08-23 18:40:51,867 - observability - INFO - trace
+2026-08-23 18:40:51,867 - observability - INFO - trace
+2026-08-23 18:40:51,867 - observability - INFO - trace
+2026-08-23 18:40:51,868 - observability - INFO - trace
+2026-08-23 18:41:05,905 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:41:05,906 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:41:05,906 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:41:07,276 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:41:07,280 - observability - INFO - trace
+2026-08-23 18:41:20,910 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:41:20,911 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:41:21,761 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:41:21,769 - observability - INFO - trace
+2026-08-23 18:41:21,769 - observability - INFO - trace
+2026-08-23 18:41:21,824 - observability - INFO - trace
+2026-08-23 18:41:21,824 - observability - INFO - trace
+2026-08-23 18:41:21,824 - observability - INFO - trace
+2026-08-23 18:41:21,824 - observability - INFO - trace
+2026-08-23 18:41:35,915 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:41:35,916 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:41:35,916 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:41:37,533 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:41:37,536 - observability - INFO - trace
+2026-08-23 18:41:37,536 - observability - INFO - trace
+2026-08-23 18:41:37,536 - observability - INFO - trace
+2026-08-23 18:41:37,606 - observability - INFO - trace
+2026-08-23 18:41:37,606 - observability - INFO - trace
+2026-08-23 18:41:37,606 - observability - INFO - trace
+2026-08-23 18:41:37,606 - observability - INFO - trace
+2026-08-23 18:41:50,920 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:41:50,921 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:41:50,921 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:41:52,278 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:41:52,281 - observability - INFO - trace
+2026-08-23 18:41:52,282 - observability - INFO - trace
+2026-08-23 18:41:52,282 - observability - INFO - trace
+2026-08-23 18:41:52,339 - observability - INFO - trace
+2026-08-23 18:41:52,339 - observability - INFO - trace
+2026-08-23 18:41:52,339 - observability - INFO - trace
+2026-08-23 18:41:52,339 - observability - INFO - trace
+2026-08-23 18:42:05,925 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:42:05,926 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:42:05,926 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:42:07,187 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:42:07,191 - observability - INFO - trace
+2026-08-23 18:42:20,930 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:42:20,931 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:42:21,974 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:42:21,981 - observability - INFO - trace
+2026-08-23 18:42:21,981 - observability - INFO - trace
+2026-08-23 18:42:22,055 - observability - INFO - trace
+2026-08-23 18:42:22,055 - observability - INFO - trace
+2026-08-23 18:42:22,056 - observability - INFO - trace
+2026-08-23 18:42:22,056 - observability - INFO - trace
+2026-08-23 18:42:35,935 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:42:35,936 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:42:35,936 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:42:37,571 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:42:37,577 - observability - INFO - trace
+2026-08-23 18:42:50,940 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:42:50,941 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:42:51,875 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:42:51,882 - observability - INFO - trace
+2026-08-23 18:42:51,882 - observability - INFO - trace
+2026-08-23 18:42:51,961 - observability - INFO - trace
+2026-08-23 18:42:51,961 - observability - INFO - trace
+2026-08-23 18:42:51,961 - observability - INFO - trace
+2026-08-23 18:42:51,961 - observability - INFO - trace
+2026-08-23 18:43:05,945 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:43:05,946 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:43:05,946 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:43:07,162 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:43:07,166 - observability - INFO - trace
+2026-08-23 18:43:07,167 - app.safety.validator - WARNING - Validation warning
+2026-08-23 18:43:07,167 - observability - INFO - trace
+2026-08-23 18:43:20,950 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:43:20,951 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:43:21,982 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:43:21,989 - observability - INFO - trace
+2026-08-23 18:43:21,989 - observability - INFO - trace
+2026-08-23 18:43:22,067 - observability - INFO - trace
+2026-08-23 18:43:22,067 - observability - INFO - trace
+2026-08-23 18:43:22,067 - observability - INFO - trace
+2026-08-23 18:43:22,067 - observability - INFO - trace
+2026-08-23 18:43:35,955 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:43:35,956 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:43:35,956 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:43:37,573 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:43:37,577 - observability - INFO - trace
+2026-08-23 18:43:50,961 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:43:50,961 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:43:51,986 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:43:51,994 - observability - INFO - trace
+2026-08-23 18:43:51,994 - observability - INFO - trace
+2026-08-23 18:43:51,994 - observability - INFO - trace
+2026-08-23 18:43:51,994 - observability - INFO - trace
+2026-08-23 18:43:51,994 - observability - INFO - trace
+2026-08-23 18:44:05,966 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:44:05,966 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:44:05,966 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:44:07,448 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:44:07,452 - observability - INFO - trace
+2026-08-23 18:44:20,971 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:44:20,971 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:44:21,889 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:44:21,896 - observability - INFO - trace
+2026-08-23 18:44:21,896 - observability - INFO - trace
+2026-08-23 18:44:21,897 - observability - INFO - trace
+2026-08-23 18:44:21,897 - observability - INFO - trace
+2026-08-23 18:44:21,897 - observability - INFO - trace
+2026-08-23 18:44:35,976 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:44:35,976 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:44:35,976 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:44:37,295 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:44:37,298 - observability - INFO - trace
+2026-08-23 18:44:37,298 - observability - INFO - trace
+2026-08-23 18:44:37,299 - observability - INFO - trace
+2026-08-23 18:44:37,378 - observability - INFO - trace
+2026-08-23 18:44:37,378 - observability - INFO - trace
+2026-08-23 18:44:37,378 - observability - INFO - trace
+2026-08-23 18:44:37,378 - observability - INFO - trace
+2026-08-23 18:44:50,981 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:44:50,981 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:44:50,982 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:44:52,387 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:44:52,390 - observability - INFO - trace
+2026-08-23 18:45:05,986 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:45:05,986 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:45:06,945 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:45:06,952 - observability - INFO - trace
+2026-08-23 18:45:06,952 - observability - INFO - trace
+2026-08-23 18:45:07,030 - observability - INFO - trace
+2026-08-23 18:45:07,030 - observability - INFO - trace
+2026-08-23 18:45:07,031 - observability - INFO - trace
+2026-08-23 18:45:07,031 - observability - INFO - trace
+2026-08-23 18:45:20,991 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:45:20,991 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:45:20,992 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:45:22,571 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:45:22,575 - observability - INFO - trace
+2026-08-23 18:45:35,996 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:45:35,996 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:45:36,871 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:45:36,881 - observability - INFO - trace
+2026-08-23 18:45:36,881 - observability - INFO - trace
+2026-08-23 18:45:36,940 - observability - INFO - trace
+2026-08-23 18:45:36,941 - observability - INFO - trace
+2026-08-23 18:45:36,941 - observability - INFO - trace
+2026-08-23 18:45:36,941 - observability - INFO - trace
+2026-08-23 18:45:51,001 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:45:51,001 - app.agent.llm_client - INFO - LLM call
+2026-08-23 18:45:51,002 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:45:52,727 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-08-23 18:45:52,730 - observability - INFO - trace
+2026-08-23 18:46:06,006 - app.agent.model_manager - INFO - Model call recorded
+2026-08-23 18:46:06,006 - google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+2026-08-23 18:46:06,951 - httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
