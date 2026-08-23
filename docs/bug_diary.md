@@ -50,14 +50,103 @@ tests/regression/test_bug1_return_window_omission.py
 
 ---
 
-## Bug 2: [Title TBD]
+## Bug 2: Order Path Never Sets handoff=True — Privacy and Not-Found Cases Receive No Escalation Signal
 
-[To be filled in when the next bug is found — either by the evaluation
-harness (A5) or further manual testing.]
+**Reproduction:**
+Send a message that routes through the order path but requires human escalation:
+- Privacy request: `"For ORD-1007, give me the customer's email, address, internal note, and risk score."`
+- Unknown order: `"Please check ORD-9999."`
+- Exception status: `"Can you check on order ORD-1010 for me?"`
+- Unsupported action: `"I need to cancel my order ORD-1002 immediately."`
+
+In all four cases, `response.handoff` is `False`. Eval case `order-data-privacy` fails
+with `handoff: expected True, got False`.
+
+**Actual failure:**
+The `AgentResponse.handoff` field is hardcoded to `False` on every branch of
+`_handle_order_path`. This means that even when the LLM phrases its answer as
+"please contact our support team", the downstream caller receives no programmatic
+`handoff=True` signal. Human escalation is invisible to any system that routes on
+`response.handoff` (e.g., a live-chat router or a UI that shows a "Connect to agent"
+button). Discovered by the evaluation harness running original case `order-data-privacy`
+(and anticipated for `unknown-order`, `order-exception-status`, and
+`unsupported-action-cancellation-multiturn`).
+
+**Root cause:**
+`app/agent/orchestrator.py` L348-353 in `_handle_order_path` constructs the
+`AgentResponse` with `handoff=False` unconditionally. The orchestrator makes no
+attempt to inspect the LLM answer or the `SafeOrderResult` to infer when escalation is
+warranted. The three handoff-relevant sub-cases in the order path are:
+1. `result.found=False` and `result.message` indicates "not_found" (unknown order).
+2. User is requesting PII/internal fields that the safe result does not contain.
+3. Order status is "exception" — requires human review.
+
+**Fix:**
+In `_handle_order_path`, derive `handoff` from `SafeOrderResult` state rather than
+hardcoding `False`. Specifically:
+- Set `handoff=True` when `result.found=False` (not-found orders can't be resolved by
+  the agent alone — a human must investigate).
+- Set `handoff=True` when `result.status == "exception"` (carrier exceptions require
+  support review per the business logic in the order data).
+- Set `handoff=True` when the LLM answer contains escalation language (a secondary
+  heuristic: check for phrases like "contact our support team", "human agent",
+  "please reach out").
+
+The `handoff=True` signal for PII requests is already partially handled because
+`optional_sanitized_lookup` routes through the knowledge path in some cases; however,
+pure order-path responses for ORD-1007 privacy requests also need the signal.
+
+**Regression test:**
+tests/unit/test_schema_b_harness.py — `TestSchemaBAssertTurn::test_handoff_checked_per_turn`
+verifies the harness correctly catches `handoff` mismatches.
+Add a new integration test in tests/integration/test_orchestrator.py:
+`test_order_not_found_sets_handoff_true` and
+`test_order_exception_sets_handoff_true` once the fix is applied.
 
 ---
 
-## Bug 3: [Title TBD]
+## Bug 3: Retrieval Miss — TrailPlus Return Window Not Surfaced for Direct Membership Assertion
 
-[To be filled in when the next bug is found.]
+**Reproduction:**
+Send exactly: `"My TrailPlus membership was active when I ordered. What is my return window?"`
+The agent responds with details about the standard 30-calendar-day return window but
+fails to include `"45 calendar days"` in its answer. Eval case `trailplus-return-window`
+fails with `must_include: '45 calendar days' not found in answer`.
+
+**Actual failure:**
+When the customer explicitly states their TrailPlus membership was active at order time,
+the agent should retrieve from `09-trailplus-membership.md` and state the 45-day return
+window as the applicable policy for that customer. Instead, the agent surfaces only the
+standard 30-day policy from `01-returns-policy-current.md`, omitting the membership
+exception entirely. The `required_sources` check also fails because
+`09-trailplus-membership.md` is not cited. Discovered by the evaluation harness on
+visible case `trailplus-return-window`.
+
+**Root cause:**
+The query "My TrailPlus membership was active when I ordered. What is my return window?"
+scores highly against the standard return-window chunks in `01-returns-policy-current.md`
+because the phrase "return window" is very strongly associated with those chunks. The
+BM25+dense hybrid retrieval ranks the standard policy chunks above the TrailPlus chunk
+even though the explicit membership assertion in the user query should up-rank
+`09-trailplus-membership.md`. The sibling boost introduced in Bug 1 only activates for
+the top-scoring document and does not spread to sibling documents in `09-trailplus-membership.md`
+when `01-returns-policy-current.md` scores highest. Additionally, the LLM synthesis
+prompt does not instruct the model to always privilege user-asserted membership context.
+
+**Fix:**
+Two-part fix:
+1. Add a keyword-presence boost in `_handle_knowledge_path`: if the query contains
+   "trailplus" (case-insensitive), manually include all chunks from `09-trailplus-membership.md`
+   in the evidence pack (similar to the sibling boost pattern already in place for Bug 1).
+2. Add a Rule to `app/agent/prompts.py` instructing: "When the customer explicitly states
+   they hold TrailPlus membership active at order time, always state the 45-day return
+   window and cite 09-trailplus-membership.md."
+
+**Regression test:**
+tests/regression/test_bug1_return_window_omission.py covers sibling-boost mechanics.
+Add `tests/regression/test_bug3_trailplus_window.py` with a test that:
+- Patches `call_llm` and verifies `09-trailplus-membership.md` chunks appear in the
+  evidence pack for a TrailPlus membership query.
+- Runs a live call and asserts `"45 calendar days"` appears in the answer and
+  `09-trailplus-membership.md` appears in citations.
 
