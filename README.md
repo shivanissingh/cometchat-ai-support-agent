@@ -157,28 +157,34 @@ The architecture separates deterministic business logic from probabilistic LLM g
 ## Development Timeline & Commit History
 
 ```mermaid
-timeline
-    title Aster & Row Agent Development Timeline
-    section Day 1: Aug 22, 2026<br/>Foundation & Core System
-        18:31 : cd7fb59 : Project Initialization & Modular Setup
-        19:12 : 91dee67 : KB Ingestion & Hybrid BGE/BM25 Search
-        19:33 : 260ed6d : Whitelist Order Tool & Safe DTO
-        20:30 : f9e0392 : Core Orchestrator & 12 Prompt Rules
-        21:20 : 749d7ce : Terminal CLI & Streamlit Web UI
-    section Overnight Pause<br/>~15 Hours
-        21:20 to 12:11 : Quota Exhaustion : Gemini free-tier daily limit (RPD) reached on initial key.<br/>Development halted overnight until quota reset and failover planned.
-    section Day 2: Aug 23, 2026<br/>Evaluation & Reliability
-        12:41 : 8a60e3a : Authored 10 Original Boundary Cases
-        13:55 : fb7ee1c : Fix Bug 1: Sibling Chunk Boost for Returns
-        15:07 : bf7a0f5 : Automated Evaluation Runner & Reporting
-        15:35 : ec840ab : Fix Bugs 2 & 3: Order Handoff & TrailPlus
-        16:32 : d7a67ef : Dedicated Model Manager & Intent Routing
-        16:43 : 7a4b9e4 : Model Manager CLI Feedback & Formatting
-        18:09 : cc8e17d : 4-Tier Model Failover (3.7 -> 3.6 -> 3.5 -> 3.5-lite)
-        18:48 : 3082e14 : PII Inquiry Handoff & Warranty Rules
-        19:38 : 1b5ce16 : Fix Bugs 4-7: Non-Echo Rules & Boundaries
-        20:27 : dcb74cf : Comprehensive Bug Diary Documentation
-        20:42 : 8f76529 : Modern Web UI Overhaul & Trace Inspector
+flowchart LR
+    subgraph Day1["Day 1: Aug 22, 2026 - Core Architecture"]
+        direction TB
+        c1["cd7fb59: Project Init"] --> c2["91dee67: KB & Hybrid Search"]
+        c2 --> c3["260ed6d: Whitelist Order Tool"]
+        c3 --> c4["f9e0392: Agent Core & Rules"]
+        c4 --> c5["749d7ce: CLI & Web UI"]
+    end
+
+    subgraph Pause["Overnight Pause: ~15 Hours"]
+        direction TB
+        p1["Rate Limit Hit (RPD Exceeded)<br/>Development paused overnight<br/>Resumed next day at ~12:11"]
+    end
+
+    subgraph Day2["Day 2: Aug 23, 2026 - Evaluation & Hardening"]
+        direction TB
+        c6["8a60e3a: 10 Original Cases"] --> c7["fb7ee1c: Fix Bug 1 (Sibling Boost)"]
+        c7 --> c8["bf7a0f5: 25-Case Eval Harness"]
+        c8 --> c9["ec840ab: Fix Bugs 2 & 3 (Handoff)"]
+        c9 --> c10["d7a67ef / 7a4b9e4: Model Manager"]
+        c10 --> c11["cc8e17d: 4-Tier Model Failover"]
+        c11 --> c12["3082e14: PII & Warranty Rules"]
+        c12 --> c13["1b5ce16: Fix Bugs 4-7 (Prompt Rules)"]
+        c13 --> c14["dcb74cf: Bug Diary Docs"]
+        c14 --> c15["8f76529: Modern Web UI Overhaul"]
+    end
+
+    Day1 --> Pause --> Day2
 ```
 
 ### Commit Milestones & Impact Matrix
