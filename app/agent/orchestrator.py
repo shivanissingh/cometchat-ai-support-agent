@@ -385,8 +385,31 @@ class Agent:
             },
         )
 
+        # Check if the query asks about order cancellation / modifications
+        cancellation_chunks: list[RetrievedChunk] = []
+        if any(kw in text.lower() for kw in ["cancel", "cancellation", "modify", "change"]):
+            if hasattr(self._kb, "chunk_index") and self._kb.chunk_index:
+                for _chunk_id, chunk in self._kb.chunk_index.items():
+                    if chunk.filename == "08-order-changes-and-cancellations.md":
+                        is_auth = (
+                            chunk.status == "active"
+                            and chunk.policy_authority == "official"
+                            and chunk.audience == "customer"
+                        )
+                        if is_auth:
+                            cancellation_chunks.append(
+                                RetrievedChunk(
+                                    chunk=chunk,
+                                    dense_score=1.0,
+                                    bm25_score=1.0,
+                                    rrf_score=1.0,
+                                    final_score=1.0,
+                                    is_authoritative=True,
+                                )
+                            )
+
         evidence = format_evidence_pack(
-            auth_chunks=[],
+            auth_chunks=cancellation_chunks,
             conflict=None,
             order_result=result,
         )
@@ -399,7 +422,7 @@ class Agent:
             include_order_tool=False,
         )
 
-        answer = validate_response(llm_answer, [], session_id, turn_id)
+        answer = validate_response(llm_answer, cancellation_chunks, session_id, turn_id)
 
         # Persist the established order_id in session for follow-up turns.
         established_order_id = result.order_id if result.found else order_id
@@ -418,12 +441,34 @@ class Agent:
                 "refund",
             ]
         )
+        is_escalation = any(
+            p in answer.lower()
+            for p in [
+                "human support specialist",
+                "human specialist",
+                "connect you with a human",
+                "connect you to a human",
+                "human agent",
+                "human representative",
+                "transfer you to",
+            ]
+        )
         handoff = (
             not result.found
             or result.status == "exception"
             or is_sensitive_request
-            or any(p in answer.lower() for p in _ORDER_HANDOFF_PHRASES)
+            or is_escalation
         )
+
+        citations: list[dict[str, str]] = []
+        if cancellation_chunks:
+            seen_files = set()
+            for rc in cancellation_chunks:
+                if rc.chunk.filename not in seen_files:
+                    citations.append(
+                        {"filename": rc.chunk.filename, "heading": rc.chunk.heading_path}
+                    )
+                    seen_files.add(rc.chunk.filename)
 
         tracer.emit(
             "response",
@@ -431,7 +476,7 @@ class Agent:
         )
         return AgentResponse(
             answer=answer,
-            citations=[],
+            citations=citations,
             handoff=handoff,
             trace=tracer.events,
         )
@@ -645,9 +690,7 @@ class Agent:
         # --- Safety validation ------------------------------------------
         answer = validate_response(llm_answer, relevant_auth, session_id, turn_id)
 
-        # --- Determine handoff ------------------------------------------
-        # Conflicts always require human confirmation; inquiries requiring human review
-        # (e.g. damaged goods, warranty claims, exceptions) also trigger handoff.
+        # Determine handoff: conflicts, product exceptions, or explicit transfer requests
         is_escalation_inquiry = (
             ("damaged" in text.lower() and "broken" in text.lower())
             or (
@@ -662,13 +705,13 @@ class Agent:
             or any(
                 p in answer.lower()
                 for p in [
-                    "human support specialist",
-                    "human specialist",
                     "connect you with a human",
                     "connect you to a human",
-                    "human agent",
-                    "human representative",
+                    "connect you with our support team",
+                    "connect you to our support team",
                     "human review before approval",
+                    "transfer you to",
+                    "transferring you to",
                 ]
             )
         )

@@ -53,10 +53,25 @@ _ORDER_ID_RE = re.compile(r"\bORD-\d{4}\b", re.IGNORECASE)
 # Order-intent keywords (case-insensitive)
 # ---------------------------------------------------------------------------
 
-_ORDER_INTENT_RE = re.compile(
-    r"\b(order|track|tracking|shipment|shipments|delivery|deliveries|"
-    r"ship(?:ped|ping)|where\s+is|package|packages|status|dispatch(?:ed)?|"
-    r"arriv(?:e|ed|al)|when\s+will|estimated?|eta)\b",
+_ORDER_LOOKUP_INTENT_RE = re.compile(
+    r"\b("
+    r"(where\s+is|where('?s|\s+is)\s+my|track(?:ing)?|status\s+of|check\s+(?:on|status|my)|lookup|find|update\s+on)\s+(?:my\s+|the\s+)?(order|package|shipment|delivery|parcel)|"
+    r"(?:my\s+|the\s+)?(order|shipment|delivery|package|dispatch)\s+status|"
+    r"status\s+of\s+(?:my\s+|the\s+)?(order|package|shipment|delivery)|"
+    r"when\s+will\s+(?:my\s+|the\s+)?(order|package|shipment|delivery|item)\s+(?:arrive|be\s+delivered|ship)|"
+    r"has\s+my\s+(?:order|package|shipment)\s+(?:shipped|dispatched|arrived)|"
+    r"where('?s|\s+is)\s+my\s+(?:order|package|shipment|delivery)|"
+    r"where\s+is\s+my\s+order"
+    r")\b",
+    re.IGNORECASE,
+)
+
+_POLICY_QUERY_RE = re.compile(
+    r"\b(policy|policies|return|returns|warranty|final\s*sale|exchange|exchanges|"
+    r"international|internationally|canada|germany|price\s*adjustment|gift\s*card|"
+    r"damaged|defect|defective|broken|vegan|dishwasher|wash|care|material|"
+    r"how\s+(?:long|do\s+i|many\s+days)|can\s+i\s+(?:return|exchange|cancel)|"
+    r"do\s+you\s+ship|what\s+is\s+the|am\s+i\s+out\s+of\s+luck|what\s+if)\b",
     re.IGNORECASE,
 )
 
@@ -156,13 +171,15 @@ def _make_decision(user_message: str, last_order_id: str | None) -> RouterDecisi
                 reason=f"Order ID {normalised!r} found in current message (regex match).",
             )
 
+    is_lookup_intent = bool(_ORDER_LOOKUP_INTENT_RE.search(user_message))
+    is_policy_query = bool(_POLICY_QUERY_RE.search(user_message))
+
     # ------------------------------------------------------------------
     # Branch (b): ORDER_ASK_ID
-    # Order-intent keywords present, but no order ID anywhere in this turn
-    # or in recent session history.
+    # Specific order lookup keywords present, but no order ID anywhere in this turn
+    # or in recent session history, and not a policy inquiry.
     # ------------------------------------------------------------------
-    has_intent = bool(_ORDER_INTENT_RE.search(user_message))
-    if has_intent and last_order_id is None:
+    if is_lookup_intent and not is_policy_query and last_order_id is None:
         return RouterDecision(
             path="order_ask_id",
             order_id=None,
@@ -180,14 +197,15 @@ def _make_decision(user_message: str, last_order_id: str | None) -> RouterDecisi
     #   (c2) the message is a short conversational follow-up (<=12 words)
     #        e.g. "When will it arrive?", "Any updates?" that naturally
     #        continues an established order context.
+    #        (Only when NOT an explicit policy inquiry like "can I still return it?")
     # ------------------------------------------------------------------
-    if last_order_id is not None:
+    if last_order_id is not None and not is_policy_query:
         word_count = len(user_message.split())
         is_short_followup = word_count <= 12
-        if has_intent or is_short_followup:
+        if is_lookup_intent or is_short_followup:
             trigger = (
                 "order-intent keywords"
-                if has_intent
+                if is_lookup_intent
                 else f"short follow-up message ({word_count} words)"
             )
             return RouterDecision(

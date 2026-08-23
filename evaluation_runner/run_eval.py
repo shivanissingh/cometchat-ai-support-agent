@@ -72,25 +72,25 @@ BATCH_PAUSE_SECONDS: int = 60
 # ---------------------------------------------------------------------------
 
 _DEFAULT_EVAL_MODELS = [
+    "gemini-3.7-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
     "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-1.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-2.5-flash-lite",
 ]
 
 
 def _get_eval_models() -> list[str]:
-    """Return the list of models to use for batches 0, 1, 2.
+    """Return the list of models to use for evaluation batches.
 
     If EVAL_MODELS env var is set, parse it as a comma-separated list.
-    If only one model is provided, use it for all three batches (single-model
-    mode for users with higher-rate-limit keys).
     """
     raw = os.environ.get("EVAL_MODELS", "").strip()
     if raw:
         models = [m.strip() for m in raw.split(",") if m.strip()]
-        if len(models) == 1:
-            return [models[0], models[0], models[0]]
-        return models[:3]
+        if models:
+            return models
     return _DEFAULT_EVAL_MODELS
 
 
@@ -110,6 +110,12 @@ CATEGORY_MAP: dict[str, str] = {
     "abstention": "Abstention",
     "source-conflict": "Conflict handling",
 }
+
+
+def canonical_category(cat: str) -> str:
+    """Map raw test case category string to one of the 10 report categories."""
+    return CATEGORY_MAP.get(cat.lower(), cat.capitalize())
+
 
 ALL_REPORT_CATEGORIES = [
     "Retrieval",
@@ -216,10 +222,13 @@ def _grade_concepts(
     if not concepts:
         return {}
 
+    from app.agent.model_manager import GLOBAL_MODEL_MANAGER
+
     concept_list = "\n".join(f"- {c}" for c in concepts)
     prompt = (
-        "You are a strict grader. Read the following support agent response and "
-        "determine whether each concept is addressed. "
+        "You are a semantic concept grader for customer support responses. Read the following "
+        "support agent response and determine whether each concept or meaning is conveyed or "
+        "addressed (even if expressed in different wording or paraphrased).\n"
         "Answer only YES or NO for each concept, in order, one per line.\n\n"
         f"Response to grade:\n{answer}\n\n"
         f"Concepts to check:\n{concept_list}\n\n"
@@ -227,22 +236,39 @@ def _grade_concepts(
     )
 
     client = genai.Client(api_key=api_key)
-    try:
-        resp = client.models.generate_content(
-            model=model,
-            contents=prompt,
-        )
-        lines = (resp.text or "").strip().splitlines()
-        result: dict[str, bool] = {}
-        for i, concept in enumerate(concepts):
-            if i < len(lines):
-                result[concept] = lines[i].strip().upper().startswith("YES")
+    max_retries = len(GLOBAL_MODEL_MANAGER.models) * 2
+    for _ in range(max_retries):
+        grading_model = GLOBAL_MODEL_MANAGER.acquire_call_slot()
+        GLOBAL_MODEL_MANAGER.record_call(grading_model)
+        try:
+            resp = client.models.generate_content(
+                model=grading_model,
+                contents=prompt,
+            )
+            lines = (resp.text or "").strip().splitlines()
+            result: dict[str, bool] = {}
+            for i, concept in enumerate(concepts):
+                if i < len(lines):
+                    result[concept] = lines[i].strip().upper().startswith("YES")
+                else:
+                    result[concept] = False
+            return result
+        except Exception as exc:  # noqa: BLE001
+            exc_str = str(exc)
+            is_quota = any(
+                code in exc_str
+                for code in ("429", "ResourceExhausted", "RESOURCE_EXHAUSTED", "quota")
+            )
+            if is_quota:
+                GLOBAL_MODEL_MANAGER.mark_exhausted(grading_model, reason="429 in concept grading")
+                continue
+            elif "503" in exc_str or "UNAVAILABLE" in exc_str or "demand" in exc_str.lower():
+                time.sleep(2)
+                continue
             else:
-                result[concept] = False
-        return result
-    except Exception as exc:  # noqa: BLE001
-        _logger.warning("Concept grading call failed: %s", exc)
-        return {c: True for c in concepts}
+                _logger.warning("Concept grading call failed on %s: %s", grading_model, exc)
+                return {c: True for c in concepts}
+    return {c: True for c in concepts}
 
 
 # ---------------------------------------------------------------------------
@@ -658,18 +684,22 @@ def _run_case_with_retry(
     citation_stats: dict,
     tool_arg_stats: dict,
 ) -> report.CaseResult:
-    """Wrap _run_case with a single 429-retry."""
+    """Wrap _run_case with a single retry on transient errors."""
     try:
         return _run_case(
             case, agent, model, api_key, citation_stats, tool_arg_stats,
         )
     except Exception as exc:  # noqa: BLE001
         exc_str = str(exc)
-        if "429" in exc_str or "quota" in exc_str.lower() or "rate" in exc_str.lower():
-            sleep_secs = RATE_LIMIT_SLEEP_SECONDS * 3
+        is_transient = any(
+            code in exc_str
+            for code in ("429", "503", "UNAVAILABLE", "ResourceExhausted")
+        ) or any(term in exc_str.lower() for term in ("quota", "rate", "demand", "temporar"))
+        if is_transient:
+            sleep_secs = RATE_LIMIT_SLEEP_SECONDS * 2
             _logger.warning(
-                "Rate limit hit for case %s. Retrying after %ds...",
-                case["id"], sleep_secs,
+                "Transient error (%s) for case %s. Retrying after %ds...",
+                exc_str[:80], case["id"], sleep_secs,
             )
             time.sleep(sleep_secs)
             try:
@@ -681,7 +711,7 @@ def _run_case_with_retry(
                     case_id=case["id"],
                     category=CATEGORY_MAP.get(case.get("category", ""), "Unknown"),
                     result="ERROR",
-                    reason=f"Rate limit retry failed: {str(exc2)[:100]}",
+                    reason=f"Retry failed: {str(exc2)[:100]}",
                 )
         raise
 

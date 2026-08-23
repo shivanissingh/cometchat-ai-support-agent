@@ -41,7 +41,7 @@ _logger = logging.getLogger(__name__)
 _client: genai.Client | None = None
 _resolved_model: str | None = None  # None = probe not yet run
 
-FALLBACK_MODEL = "gemini-3.6-flash"
+FALLBACK_MODEL = "gemini-3.5-flash-lite"
 
 # ---------------------------------------------------------------------------
 # lookup_order function schema for Gemini function calling
@@ -232,6 +232,8 @@ def call_llm(
             )
         )
 
+    from app.agent.model_manager import GLOBAL_MODEL_MANAGER
+
     tools = [LOOKUP_ORDER_TOOL] if include_order_tool else []
 
     cfg = genai_types.GenerateContentConfig(
@@ -240,20 +242,61 @@ def call_llm(
         tools=tools if tools else None,
     )
 
-    _logger.info(
-        "LLM call",
-        extra={
-            "model": model,
-            "history_turns": len(history),
-            "include_order_tool": include_order_tool,
-        },
-    )
+    import time
 
-    response = client.models.generate_content(
-        model=model,
-        contents=contents,
-        config=cfg,
-    )
+    max_model_attempts = len(GLOBAL_MODEL_MANAGER.models) * 2
+    response = None
+    last_exc = None
+
+    for _ in range(max_model_attempts):
+        model = GLOBAL_MODEL_MANAGER.acquire_call_slot()
+        GLOBAL_MODEL_MANAGER.record_call(model)
+
+        _logger.info(
+            "LLM call",
+            extra={
+                "model": model,
+                "history_turns": len(history),
+                "include_order_tool": include_order_tool,
+            },
+        )
+
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=contents,
+                config=cfg,
+            )
+            break
+        except Exception as exc:  # noqa: BLE001
+            last_exc = exc
+            exc_str = str(exc)
+            is_quota = any(
+                code in exc_str
+                for code in ("429", "ResourceExhausted", "RESOURCE_EXHAUSTED", "quota")
+            )
+            if is_quota:
+                _logger.warning(
+                    "Quota / rate-limit hit on model %s; switching to next model in pool",
+                    model,
+                    extra={"error": exc_str[:200]},
+                )
+                GLOBAL_MODEL_MANAGER.mark_exhausted(model, reason="429 ResourceExhausted")
+                continue
+            elif "503" in exc_str or "UNAVAILABLE" in exc_str or "demand" in exc_str.lower():
+                _logger.warning(
+                    "Transient 503 on model %s; switching to next model",
+                    model,
+                )
+                time.sleep(2)
+                continue
+            else:
+                raise
+
+    if response is None:
+        if last_exc is not None:
+            raise last_exc
+        return "", None
 
     # Check for a function call in the response.
     fn_call_args: dict[str, Any] | None = None
@@ -263,7 +306,7 @@ def call_llm(
                 fn_call_args = dict(part.function_call.args or {})
                 _logger.info(
                     "LLM emitted function call",
-                    extra={"function_name": part.function_call.name, "args": fn_call_args},
+                    extra={"function_name": part.function_call.name, "fn_args": fn_call_args},
                 )
                 break
 
